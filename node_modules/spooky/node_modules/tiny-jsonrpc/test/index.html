@@ -1,0 +1,48 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link rel="stylesheet" href="node_modules/mocha/mocha.css" />
+  <script src="node_modules/expect.js/expect.js"></script>
+  <script src="node_modules/eventemitter2/lib/eventemitter2.js"></script>
+  <script src="node_modules/mocha/mocha.js"></script>
+  <script src="util/sinon-1.4.2.js"></script>
+  <script src="dist/tiny-jsonrpc.js"></script>
+  <script>
+    (function () {
+      var moduleMap = {
+        sinon: sinon,
+        'expect.js': expect,
+        '../lib/tiny-jsonrpc': tinyJsonRpc,
+        'events': {
+          EventEmitter: EventEmitter2
+        }
+      };
+
+      this.require = function require(module) {
+        return moduleMap[module];
+      };
+    }());
+  </script>
+  <script>mocha.setup('bdd')</script>
+  <script src="client.js"></script>
+  <script src="client.request.js"></script>
+  <script src="client.notify.js"></script>
+  <script src="stream-client.js"></script>
+  <script src="stream-client.request.js"></script>
+  <script src="server.js"></script>
+  <script src="server.provide.js"></script>
+  <script src="server.provides.js"></script>
+  <script src="server.respond.js"></script>
+  <script src="server.revoke.js"></script>
+  <script src="stream-server.js"></script>
+  <script src="stream-server.listen.js"></script>
+</head>
+<body>
+  <div id="mocha"></div>
+  <script>
+      mocha.
+        run();
+  </script>
+</body>
+</html>
