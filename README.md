@@ -18,9 +18,6 @@ Add description.
 ### Completed
 
 * Create a cookie and store the UUID.
-	
 	*Use https://github.com/carhartl/jquery-cookie
-
 * Create an onload page listener.
-	
 	* Emit a Socket.io event indicating the URL has changed. Use the UUID stored in the actionatadistanceCookie.
