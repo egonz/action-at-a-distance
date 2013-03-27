@@ -1,6 +1,8 @@
 'use strict';
 
-actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, ActionAtADistance) {
+actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, ActionAtADistance) {
+
+    $scope.spooky = [];
 
 	ActionAtADistance.on('connect', function () {
         ActionAtADistance.emit('init');
@@ -10,15 +12,22 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, ActionAtADi
         $scope.ActionAtADistanceGuid = data.guid;
        	ActionAtADistance.guid = $scope.ActionAtADistanceGuid;
         console.log('ActionAtADistanceGuid ' + $scope.ActionAtADistanceGuid);
-        ActionAtADistance.emit('open', {guid: $scope.ActionAtADistanceGuid, url: 'http://www.google.com/search?q=casperjs'});
+        ActionAtADistance.emit('open', {guid: $scope.ActionAtADistanceGuid, url: 'http://www.bing.com/social/search'});
     });
 
     ActionAtADistance.on('callback', function (data) {
+        console.log(data);
+
         if (data.action === 'start') {
             $scope.spookyAction = getSpookyAction($scope.ActionAtADistanceGuid);
 
+        } else if (data.action === 'documentLoaded' && data.documentLocationHref !== 'http://www.bing.com/social/search') {
+            $scope.spookyAction = 'var spookyResult;' +
+                '$("ul.sn_updates li:first-child").livequery(function() { ' +
+                'spookyResult={data: $("ul.sn_updates li:first-child").html()};sendCallback(guid, spookyResult);});';
+
         } else if (data.action === 'evaluate') {
-            $scope.spooky = data.result;
+            $scope.spooky.push(data.result.data);
         }
     });
 
@@ -37,25 +46,8 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, ActionAtADi
     };
 
     function getSpookyAction(guid) {
-        return 'var guid="' + guid + '";' +
-                'var links=document.querySelectorAll("h3.r a");' +
-                'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
-                'var spookyResult = {data: links};';
-
-// '$("h3.r a").livequery(function(){ console.log("Search results found"); });';
-
-//                 'var guid="' + guid + '";' +
-// '$(\'input[name="q"]\').simulate("key-sequence", {sequence: "casperjs"});' +
-// 'waitFor(function() { ' +
-// 'function() { ' +
-// 'return $("h3.r a").is(":visible"); ' +
-// '};' +
-// '}, function() {' +
-// 'console.log("The sign-in dialog should be visible now.");' +
-// 'var links=document.querySelectorAll("h3.r a");' +
-// 'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
-// '}); ' +
-// 'var spookyResult = {data: links};'
+        return '$("input#sb_form_q").val("youtube");' +
+               '$("input#sb_form_go").click();';
     }
 
     if (typeof ActionAtADistance.guid !== 'undefined' && ActionAtADistance.guid !== null)

@@ -11,8 +11,10 @@ var io,
     server = require('http').createServer(express()),
     Spooky = require('spooky'),
     uuid = require('node-uuid'),
+    fs = require('fs'),
     sockUserModel = require('./models/sockuser.js'),
-    sockUserCollection = new sockUserModel.SockUserCollection();
+    sockUserCollection = new sockUserModel.SockUserCollection(),
+    cookieFile = '/tmp/actionatadistanceCookie-';
 
 exports.configure = function() {
 	io = require('socket.io').listen(server);
@@ -50,21 +52,35 @@ function setup() {
         });
 
         socket.on('evaluate', function (data) {
-            console.log('evaluate called with spooky action ' + data.action);
-            var sockUser = getSockUser(data.guid);
-            console.log(typeof sockUser.spookySocket);
-            // spookyAction(sockUser.socket.spooky, data.action);
-            sockUser.spookySocket.emit('spookyAction', data.action);
+            try {
+                console.log('evaluate called with spooky action ' + data.action + ' for guid ' + socket.guid);
+                var sockUser = getSockUser(socket.guid);
+
+                // spookyAction(sockUser.socket.spooky, data.action);
+                sockUser.spookySocket.emit('spookyAction', data.action);
+                console.log('Sent evaluate request to spookyAction.');
+            } catch (err) {
+                console.error('Evaluate error ' + err);
+            }
         });
 
         socket.on('callback', function (data) {
-            console.log('callback called for ' + data.guid);
-            var sockUser = getSockUser(data.guid);
+            try {
+                console.log('callback called for ' + data.guid);
+                
+                var sockUser = getSockUser(data.guid);
 
-            if (typeof sockUser.spookySocket === 'undefined')
+                if (typeof sockUser === 'undefined') {
+                    console.log("sockUser === 'undefined'");
+                    return;
+                }
+
                 sockUser.spookySocket = socket;
 
-            sockUser && sockUser.socket.emit('callback', data);
+                sockUser.socket.emit('callback', data);
+            } catch (err) {
+                console.error('callback error ' + err);
+            }
         });
     });
 }
@@ -97,15 +113,19 @@ function removeSockUser(guid) {
 }
 
 function evoke(socket) {
-	var spooky = new Spooky({
+    var cookie = cookieFileName(socket.guid);
+    if (fs.existsSync(cookie))
+        fs.unlinkSync(cookie);
+	
+    var spooky = new Spooky({
         casper: {
             verbose: true,
             logLevel: 'debug',
             waitTimeout: 3600000,
             clientScripts: [__dirname + '/vendor/jquery-1.9.1.min.js',
                             __dirname + '/vendor/socket.io.js',
-                            __dirname + '/vendor/bililiteRange.js',
-                            __dirname + '/vendor/jquery.simulate.js',
+                            __dirname + '/vendor/jquery.livequery-1.1.1/jquery.livequery.js',
+                            __dirname + '/vendor/jquery-cookie/jquery.cookie.js',
                             __dirname + '/lib/actionatadistance-server.js'],
             pageSettings: {
                  loadImages:  false,         // The WebPage instance used by Casper will
@@ -143,9 +163,13 @@ function evoke(socket) {
         });
 
         readyForSpookyAction(socket);
-    });
+    }, cookie);
 
 	return spooky;
+}
+
+function cookieFileName(guid) {
+    return cookieFile + guid + '.txt';
 }
 
 function readyForSpookyAction(socket) {
@@ -154,25 +178,14 @@ function readyForSpookyAction(socket) {
 
 function spookyStart(spooky, data) {
     spooky.start(data.url, function(res) {
-        console.log("page loaded");
-        //TODO create a callback object
-        var guid = this.options.guid;
+        console.log("INITIAL PAGE LOADED");
+        delete guid;
 
         this.thenEvaluate(function (js) {
             eval(js);
-            //Global socket
-            socket = io.connect('http://localhost:1313');
+            saveCookie();
             socket.emit('callback', {'action': 'start', 'guid': guid});
-
-            socket.on('spookyAction', function(action) {
-                console.log(action);
-                eval(action);
-                var spookyCallbackResp = {'action': 'evaluate', 'guid': guid};
-                if (typeof spookyResult !== 'undefined') spookyCallbackResp.result = spookyResult;
-
-                socket.emit('callback', spookyCallbackResp);
-            });
-        }, 'var guid=\'' + this.options.guid + '\';');
+        }, 'guid=\'' + this.options.guid + '\';');
     });
 
     //This keeps the Sppoky.js code from timing out
