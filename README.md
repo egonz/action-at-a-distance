@@ -4,9 +4,9 @@ Add description.
 
 ## TODO
 
-### Client
+### Client API
 
-### Server
+### Server API
 
 * Create a Mongo Socket.io API.
 
@@ -15,7 +15,9 @@ Add description.
 * Save URL and on load of the Controller check if the URL is different, and if so send disconnect,
   and start messages.
 
-### Completed
+### Completed Client API
+
+### Completed Server API
 
 * Create a cookie and store the UUID.
 	* Use https://github.com/carhartl/jquery-cookie
