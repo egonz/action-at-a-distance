@@ -14,9 +14,10 @@ Execute Javascript in a non-local page, and return nodes and parse them locally.
 Includes demos built with [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack) and AngularJS. To
 run the demos: 
 
-1. Install Yeoman Express-Stack.
-2. npm install.
-3. yeomen server.
+1. Install Yeoman Express-Stack
+2. git clone https://github.com/egonz/action-at-a-distance.git; cd $_
+2. npm install
+3. yeomen server
 
 ## NodeJS
 
