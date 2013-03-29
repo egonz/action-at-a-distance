@@ -18,23 +18,16 @@ run the demos:
 2. npm install.
 3. yeomen server.
 
-
 ## NodeJS
 
 	var actionatadistance = require('actionatadistance').configure();
-
 	...
-
 	actionatadistance.start();
-
 	...
-
 	actionatadistance.stop();
-
 
 ## Clientside Javascript
 
-	
 	spookyActions.push('var links=document.querySelectorAll("h3.r a");' +
         'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
         'var spookyResult = {data: links};');
