@@ -1,6 +1,9 @@
 # ActionAtADistance
 
-Use [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/).
+A socket based Javascript screen scraping NodeJS module.
+
+Use [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/). 
+Execute Javascript in a non-local page, and return nodes and parse them locally.
 
 ## TODO
 
@@ -8,14 +11,12 @@ Use [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/).
 
 ### Server API
 
-* Create a Mongo Socket.io API.
-
 ### Client Demo
+
+### Completed Client API
 
 * Save URL and on load of the Controller check if the URL is different, and if so send disconnect,
   and start messages.
-
-### Completed Client API
 
 * Develop client API to encapsulate the Socket.io protocol.
 
