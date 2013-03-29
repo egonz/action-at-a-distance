@@ -29,21 +29,38 @@ run the demos:
 
 ## Clientside Javascript
 
-	spookyActions.push('var links=document.querySelectorAll("h3.r a");' +
+JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas](http://html2canvas.hertzen.com/) (TODO) are injected into each page that are loaded. LiveQuery allows for processing of DOM elements loaded asynchronously adfter the page loads. html2canvas adds support for taking screen shots after page loads.
+
+Example:
+
+    spookyActions.push('$(\'input[name="q"]\').val("CASPERJS");' +
+        '$(\'button[name="btnK"]\').submit();');
+    spookyActions.push('$("h3.r a").livequery(function() { ' +
+        'var links=document.querySelectorAll("h3.r a");' +
         'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
-        'var spookyResult = {data: links};');
+        'var spookyResult = {data: links};' +
+        'sendCallback(uuid, spookyResult);' +
+        '});');
 
-    actionAtADistance.onConnect(function() {
-        actionAtADistance.start('http://www.google.com/search?q=casperjs');
+    googleActionAtADistance.onConnect(function() {
+        googleActionAtADistance.start('http://www.google.com');
     });
 
-    actionAtADistance.onDocumentLoaded(function(documentLocationHref) {
-        spookyAction = spookyActions[0];
+    googleActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
+        loadSpookyAction(documentLocationHref);
     });
 
-    actionAtADistance.onEvaluateResponse(function(data) {
+    googleActionAtADistance.onEvaluateResponse(function(data) {
         spooky = data.result;
     });
+
+    function loadSpookyAction(documentLocationHref) {
+        if (documentLocationHref === 'http://www.google.com') {
+            spookyAction = spookyActions[0];
+        } else if (documentLocationHref !== 'http://www.google.com') {
+            spookyAction = spookyActions[1];
+        }
+    }
 
 
 ## TODO
@@ -52,6 +69,8 @@ run the demos:
 * Integrate SockMonkey.js
 
 ### Client API
+
+Add html2canvas. Save canvas to PNG. Return URL.
 
 ### Server API
 
