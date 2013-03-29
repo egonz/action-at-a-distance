@@ -5,6 +5,21 @@ A socket based Javascript screen scraping NodeJS module.
 Use [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/). 
 Execute Javascript in a non-local page, and return nodes and parse them locally.
 
+## Install
+
+
+## Demos
+
+Includes demos built with the [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack). To
+run the demos: 
+
+1. Install Yeoman Express-Stack.
+
+2. npm install.
+
+3. yeomen server.
+
+
 ## TODO
 
 ### Client API
