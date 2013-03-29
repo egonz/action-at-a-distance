@@ -25,8 +25,6 @@ function waitFor(testFx, onReady, timeOutMillis) {
 
 function sendCallback(uuid, spookyResult) {
     try {
-        console.log("SENDCALLBACK");
-
         var spookyCallbackResp = {'action': 'evaluate', 'uuid': uuid};
         if (typeof spookyResult !== 'undefined') spookyCallbackResp.result = spookyResult;
 
@@ -69,10 +67,7 @@ function createSpookyActionListener() {
     });
 }
 
-$(document).ready(function() {
-    socket = io.connect('http://localhost:1313');
-
-    console.log('DOCUMENT LOADED');
+function onDocumentLoaded() {
     try {
         createSpookyActionListener();
 
@@ -87,6 +82,18 @@ $(document).ready(function() {
     } catch (err) {
         console.log('DOCUMENT.READY ERROR' + err);
     }
+}
+
+$(document).ready(function() {
+    socket = io.connect('http://localhost:1313');
+
+    console.log('DOCUMENT LOADED');
+    onDocumentLoaded();
+});
+
+$(window).on('hashchange', function() {
+  console.log('HASH CHANGE ' + cookie);
+  onDocumentLoaded();
 });
 
 //TODO implement SpookyAction shutdown by inserting div.spookyStop into the DOM.

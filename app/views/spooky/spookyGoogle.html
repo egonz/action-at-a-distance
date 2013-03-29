@@ -18,7 +18,7 @@
 		</div>
 
 		<div>
-			<input type="button" class="btn btn-primary" ng-click="actionAtADistance()" value="Action At A Distance" ng-show="spookyAction">
+			<input type="button" class="btn btn-primary" ng-click="actionAtADistance()" value="Action At A Distance" ng-show="spookyAction" ng-disabled="disableSpookyButton">
 		</div>
 	</div>
 
@@ -27,8 +27,4 @@
 			<div><a href="{{link}}" target="_blank">{{link}}</a></div>
 		</div>
 	</div>
-</div>
-
-<div class="modal">
-	<img src="images/ajax-loader.gif" />
 </div>

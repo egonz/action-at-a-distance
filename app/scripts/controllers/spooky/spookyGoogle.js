@@ -2,12 +2,18 @@
 
 actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope) {
 
-    var startUrl = 'http://www.google.com/search?q=casperjs';
-    var spookyActions = []; 
+    var startUrl = 'http://www.google.com';
+    var spookyActions = [];
+    $scope.disableSpookyButton = false;
 
-    spookyActions.push('var links=document.querySelectorAll("h3.r a");' +
+    spookyActions.push('$(\'input[name="q"]\').val("CASPERJS");' +
+        '$(\'button[name="btnK"]\').submit();');
+    spookyActions.push('$("h3.r a").livequery(function() { ' +
+        'var links=document.querySelectorAll("h3.r a");' +
         'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
-        'var spookyResult = {data: links};');
+        'var spookyResult = {data: links};' +
+        'sendCallback(uuid, spookyResult);' +
+        '});');
 
     if (typeof $rootScope.googleActionAtADistance === 'undefined') {
         $rootScope.googleActionAtADistance = actionAtADistance();
@@ -22,40 +28,46 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
     });
 
     googleActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
-        $scope.$apply(function () {
-            $scope.spookyAction = spookyActions[0];
-        });
+        loadSpookyAction(documentLocationHref);
     });
 
     googleActionAtADistance.onEvaluateResponse(function(data) {
         $scope.$apply(function () {
             $scope.spooky = data.result;
         });
+
+        setTimeout(enableSpookyButton, 1000);
     });
 
     if (googleActionAtADistance.connected()) {
         console.log('Page already loaded.');
-        $scope.spookyAction = spookyActions[0];
+        $scope.spookyAction = spookyActions[1];
         $scope.uuid = googleActionAtADistance.uuid();
     }
 
+    function loadSpookyAction(documentLocationHref) {
+        if (documentLocationHref === 'http://www.google.com') {
+            $scope.$apply(function () {
+                $scope.spookyAction = spookyActions[0];
+            });
+        } else if (documentLocationHref !== 'http://www.google.com') {
+            $scope.$apply(function () {
+                $scope.spookyAction = spookyActions[1];
+            });
+        }
+
+        setTimeout(enableSpookyButton, 1000);
+    }
+
+    function enableSpookyButton() {
+        $scope.$apply(function () {
+            $scope.disableSpookyButton = false;
+        });
+    }
+
     $scope.actionAtADistance = function() {
+        $scope.disableSpookyButton = true;
         googleActionAtADistance.evaluate({action: $scope.spookyAction});
     };
-
-// 'var uuid="' + uuid + '";' +
-// '$(\'input[name="q"]\').simulate("key-sequence", {sequence: "casperjs"});' +
-// 'waitFor(function() { ' +
-// 'function() { ' +
-// 'return $("h3.r a").is(":visible"); ' +
-// '};' +
-// '}, function() {' +
-// 'console.log("The sign-in dialog should be visible now.");' +
-// 'var links=document.querySelectorAll("h3.r a");' +
-// 'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
-// '}); ' +
-// 'var spookyResult = {data: links};'
-    // }
-
 
 });

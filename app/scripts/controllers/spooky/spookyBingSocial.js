@@ -4,6 +4,7 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
 
     var startUrl = 'http://www.bing.com/social';
     var spookyActions = [];
+    $scope.disableSpookyButton = false;
 
     $scope.spooky = [];
 
@@ -33,11 +34,12 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
         $scope.$apply(function () {
             $scope.spooky.unshift(data.result.data);
         });
+
+        setTimeout(enableSpookyButton, 1000);
     });
 
     if (bingSocialActionAtADistance.connected()) {
         console.log('Page already loaded.');
-        loadSpookyAction(documentLocationHref);
         $scope.uuid = bingSocialActionAtADistance.uuid();
     }
 
@@ -51,9 +53,18 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
                 $scope.spookyAction = spookyActions[1];
             });
         }
+
+        setTimeout(enableSpookyButton, 1000);
+    }
+
+    function enableSpookyButton() {
+        $scope.$apply(function () {
+            $scope.disableSpookyButton = false;
+        });
     }
 
     $scope.actionAtADistance = function() {
+        $scope.disableSpookyButton = true;
         bingSocialActionAtADistance.evaluate({action: $scope.spookyAction});
     };
 
