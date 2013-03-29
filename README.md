@@ -48,6 +48,9 @@ run the demos:
 
 ## TODO
 
+* Switch to using SpookyCookies.
+* Integrate SockMonkey.js
+
 ### Client API
 
 ### Server API

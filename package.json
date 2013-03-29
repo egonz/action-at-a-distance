@@ -1,12 +1,12 @@
 {
-  "name": "ActionAtADistance",
+  "name": "action-at-a-distance",
   "version": "0.0.1",
   "author": {
     "name": "Eddie Gonzales",
     "email": "eddiemgonzales@gmail.com"
   },
   "description": "Use Socket.io to drive CasperJS",
-  "main": "./server/index.js",
+  "main": "./server/actionatadistance.js",
   "dependencies": {
     "express": "3.0.0"
     , "mongoose": "3.5.5"
