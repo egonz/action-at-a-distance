@@ -11,7 +11,7 @@ Execute Javascript in a non-local page, and return nodes and parse them locally.
 
 ## Demos
 
-Includes demos built with the [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack). To
+Includes demos built with [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack) and AngularJS. To
 run the demos: 
 
 1. Install Yeoman Express-Stack.
