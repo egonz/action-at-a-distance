@@ -1,6 +1,6 @@
 # ActionAtADistance
 
-Add description.
+Use [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/).
 
 ## TODO
 
@@ -16,6 +16,8 @@ Add description.
   and start messages.
 
 ### Completed Client API
+
+* Develop client API to encapsulate the Socket.io protocol.
 
 ### Completed Server API
 

@@ -4,14 +4,14 @@
 	</div>
 </div>
 
+<div class="row" style="height: 30px;">
+	<div class="span8">
+		Your Spooky UUID: {{uuid}}
+	</div>
+</div>
+
 <div class="row">
 	<div class="span7">
-		<div style="height: 30px;">
-			<div ng-show="ActionAtADistanceGuid">
-				Your Spooky Guid: {{ActionAtADistanceGuid}}
-			</div>
-		</div>
-
 		<div>
 			<textarea ng-model="spookyAction" style="margin: 0px 0px 10px; width: 492px; height: 169px;">
 			</textarea>
@@ -22,7 +22,9 @@
 		</div>
 	</div>
 
-	<div class="span8" ng-repeat="link in spooky.data">
-		<div><a href="{{link}}" target="_blank">{{link}}</a></div>
+	<div class="span8">
+		<div ng-repeat="link in spooky.data">
+			<div><a href="{{link}}" target="_blank">{{link}}</a></div>
+		</div>
 	</div>
 </div>

@@ -7,8 +7,8 @@
 <div class="row">
 	<div class="span7">
 		<div style="height: 30px;">
-			<div ng-show="ActionAtADistanceGuid">
-				Your Spooky Guid: {{ActionAtADistanceGuid}}
+			<div ng-show="uuid">
+				Your Spooky UUID: {{uuid}}
 			</div>
 		</div>
 
@@ -23,7 +23,7 @@
 	</div>
 
 	<div class="span6">
-		<div ng:repeat="item in spooky" ng-bind-html-unsafe="item"></div>
+		<div ng:repeat="item in spooky" ng-bind-html-unsafe="item" style="margin: 0px 0px 5px 0px;"></div>
 	</div>
 </div>
 

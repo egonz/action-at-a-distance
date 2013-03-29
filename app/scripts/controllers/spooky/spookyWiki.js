@@ -1,46 +1,45 @@
 'use strict';
 
-actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, ActionAtADistance) {
+actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, $rootScope) {
+ 
+    var startUrl = 'http://en.wikipedia.org/wiki/Spooky_the_Tuff_Little_Ghost';
+    var spookyActions = []; 
 
-	ActionAtADistance.on('connect', function () {
-        ActionAtADistance.emit('init');
+    spookyActions.push('var spookyResult = {data: $("div#mw-content-text").html()};' +
+                'console.log("Hello, from " + document.title);');
+
+    if (typeof $rootScope.wikiActionAtADistance === 'undefined') {
+        $rootScope.wikiActionAtADistance = actionAtADistance();
+    }
+
+    var wikiActionAtADistance = $rootScope.wikiActionAtADistance;
+
+    wikiActionAtADistance.onConnect(function() {
+        console.log('onConnect Wiki');
+        wikiActionAtADistance.start(startUrl);
+        $scope.uuid = wikiActionAtADistance.uuid();
     });
 
-    ActionAtADistance.on('initResp', function (data) {
-        $scope.ActionAtADistanceGuid = data.guid;
-       	ActionAtADistance.guid = $scope.ActionAtADistanceGuid;
-        console.log('ActionAtADistanceGuid ' + $scope.ActionAtADistanceGuid);
-        ActionAtADistance.emit('open', {guid: $scope.ActionAtADistanceGuid, url: 'http://en.wikipedia.org/wiki/Spooky_the_Tuff_Little_Ghost'});
+    wikiActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
+        $scope.$apply(function () {
+            $scope.spookyAction = spookyActions[0];
+        });
     });
 
-    ActionAtADistance.on('callback', function (data) {
-        if (data.action === 'start') {
-            $scope.spookyAction = 'var guid="' + $scope.ActionAtADistanceGuid +
-                    '";var spookyResult = {data: $("div#mw-content-text").html()};' +
-                    'console.log("Hello, from " + document.title);';
-
-        } else if (data.action === 'evaluate') {
+    wikiActionAtADistance.onEvaluateResponse(function(data) {
+        $scope.$apply(function () {
             $scope.spooky = data.result;
-        }
+        });
     });
 
-    ActionAtADistance.on('disconnect', function () {
-        console.log('disconnect');
-    });
+    if (wikiActionAtADistance.connected()) {
+        console.log('Page already loaded.');
+        $scope.spookyAction = spookyActions[0];
+        $scope.uuid = wikiActionAtADistance.uuid();
+    }
 
     $scope.actionAtADistance = function() {
-        console.log('action at a distance');
-        ActionAtADistance.emit('evaluate', {guid: $scope.ActionAtADistanceGuid, action: $scope.spookyAction});
+        wikiActionAtADistance.evaluate({action: $scope.spookyAction});
     };
-
-    $scope.reloadLastView = function() {
-    	$scope.ActionAtADistanceGuid  = ActionAtADistance.guid;
-        $scope.spookyAction = 'var guid="' + $scope.ActionAtADistanceGuid +
-                    '";var spookyResult = {data: $("div#mw-content-text").html()};' +
-                    'console.log("Hello, from " + document.title);';
-    };
-
-    if (typeof ActionAtADistance.guid !== 'undefined' && ActionAtADistance.guid !== null)
-		$scope.reloadLastView();
 
 });

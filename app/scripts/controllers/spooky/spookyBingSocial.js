@@ -1,56 +1,60 @@
 'use strict';
 
-actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, ActionAtADistance) {
+actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootScope) {
+
+    var startUrl = 'http://www.bing.com/social';
+    var spookyActions = [];
 
     $scope.spooky = [];
 
-	ActionAtADistance.on('connect', function () {
-        ActionAtADistance.emit('init');
-    });
+    spookyActions.push('$("input#sb_form_q").val("youtube");' +
+        '$("input#sb_form_go").click();');
+    spookyActions.push('var spookyResult;' +
+        '$("ul.sn_updates li:first-child").livequery(function() { ' +
+        'spookyResult={data: $("ul.sn_updates li:first-child").html()};sendCallback(uuid, spookyResult);});');
 
-    ActionAtADistance.on('initResp', function (data) {
-        $scope.ActionAtADistanceGuid = data.guid;
-       	ActionAtADistance.guid = $scope.ActionAtADistanceGuid;
-        console.log('ActionAtADistanceGuid ' + $scope.ActionAtADistanceGuid);
-        ActionAtADistance.emit('open', {guid: $scope.ActionAtADistanceGuid, url: 'http://www.bing.com/social/search'});
-    });
-
-    ActionAtADistance.on('callback', function (data) {
-        console.log(data);
-
-        if (data.action === 'start') {
-            $scope.spookyAction = getSpookyAction($scope.ActionAtADistanceGuid);
-
-        } else if (data.action === 'documentLoaded' && data.documentLocationHref !== 'http://www.bing.com/social/search') {
-            $scope.spookyAction = 'var spookyResult;' +
-                '$("ul.sn_updates li:first-child").livequery(function() { ' +
-                'spookyResult={data: $("ul.sn_updates li:first-child").html()};sendCallback(guid, spookyResult);});';
-
-        } else if (data.action === 'evaluate') {
-            $scope.spooky.push(data.result.data);
-        }
-    });
-
-    ActionAtADistance.on('disconnect', function () {
-        console.log('disconnect');
-    });
-
-    $scope.actionAtADistance = function() {
-        console.log('action at a distance');
-        ActionAtADistance.emit('evaluate', {guid: $scope.ActionAtADistanceGuid, action: $scope.spookyAction});
-    };
-
-    $scope.reloadLastView = function() {
-    	$scope.ActionAtADistanceGuid  = ActionAtADistance.guid;
-        $scope.spookyAction = getSpookyAction($scope.ActionAtADistanceGuid);
-    };
-
-    function getSpookyAction(guid) {
-        return '$("input#sb_form_q").val("youtube");' +
-               '$("input#sb_form_go").click();';
+    if (typeof $rootScope.bingSocialActionAtADistance === 'undefined') {
+        $rootScope.bingSocialActionAtADistance = actionAtADistance();
     }
 
-    if (typeof ActionAtADistance.guid !== 'undefined' && ActionAtADistance.guid !== null)
-		$scope.reloadLastView();
+    var bingSocialActionAtADistance = $rootScope.bingSocialActionAtADistance;
+
+    bingSocialActionAtADistance.onConnect(function() {
+        console.log('onConnect Bing Social');
+        bingSocialActionAtADistance.start(startUrl);
+        $scope.uuid = bingSocialActionAtADistance.uuid();
+    });
+
+    bingSocialActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
+        loadSpookyAction(documentLocationHref);
+    });
+
+    bingSocialActionAtADistance.onEvaluateResponse(function(data) {
+        $scope.$apply(function () {
+            $scope.spooky.unshift(data.result.data);
+        });
+    });
+
+    if (bingSocialActionAtADistance.connected()) {
+        console.log('Page already loaded.');
+        loadSpookyAction(documentLocationHref);
+        $scope.uuid = bingSocialActionAtADistance.uuid();
+    }
+
+    function loadSpookyAction(documentLocationHref) {
+        if (documentLocationHref === 'http://www.bing.com/social') {
+            $scope.$apply(function () {
+                $scope.spookyAction = spookyActions[0];
+            });
+        } else if (documentLocationHref !== 'http://www.bing.com/social') {
+            $scope.$apply(function () {
+                $scope.spookyAction = spookyActions[1];
+            });
+        }
+    }
+
+    $scope.actionAtADistance = function() {
+        bingSocialActionAtADistance.evaluate({action: $scope.spookyAction});
+    };
 
 });

@@ -1,9 +1,50 @@
-<div class="hero-unit">
-  <h1>Cheerio!</h1>
-  <p>You now have</p>
-  <ul>
-      <li ng-repeat="thing in awesomeThings">{{thing}}</li>
-  </ul>
-  <p>installed.</p>
-  <h3>Enjoy coding! - Yeoman</h3>
+<div id="main" class="hero-unit row">
+	<div class="span8">
+		<h1 style="color: white;">ActionAtADistance</h1>
+
+		<div>
+			<h3>Overview</h3>
+		</div>
+
+		<div>
+			<div style="margin-bottom: 15px;">
+				A socket based Javascript screen scraping NodeJS module.
+			</div>
+			Use Socket.io to drive CasperJS/PhantomJS using SpookyJS.<br /> 
+			Execute Javascript in a non-local page, and return nodes and parse them locally.
+		</div>
+
+		<div>
+			<h3>Demos</h3>
+		</div>
+
+		<div>
+			<a href="/#/spooky/wiki">Wikipedia</a>
+			<ul>
+				Simple demo. Include HTML from another page.
+			</ul>
+		</div>
+
+		<div>
+			<a href="/#/spooky/google">Google</a>
+			<ul>
+				Return an array of DOM elements (search results).
+			</ul>
+		</div>
+
+		<div>
+			<a href="/#/spooky/bing/social">Bing Social</a>
+			<ul>
+				Perform a search using Javascript.<br /> 
+				Then when the page of search results are loaded,<br /> 
+				Wait for an element to appear.<br />
+				And when it does, send the node back to the local page asynchronously.
+			</ul>
+		</div>
+	</div>
+
+	<div class="span5">
+		<img src="images/Albert_Einstein_Head.jpg" />
+		<div style="text-align:center"><a href="http://en.wikipedia.org/wiki/Spooky_action_at_a_distance">Science!</a></div>
+	</div>
 </div>

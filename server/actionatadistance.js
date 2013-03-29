@@ -10,7 +10,7 @@ var io,
     express = require('express'),
     server = require('http').createServer(express()),
     Spooky = require('spooky'),
-    uuid = require('node-uuid'),
+    nodeUuid = require('node-uuid'),
     fs = require('fs'),
     sockUserModel = require('./models/sockuser.js'),
     sockUserCollection = new sockUserModel.SockUserCollection(),
@@ -33,28 +33,28 @@ function setup() {
     io.sockets.on('connection', function(socket) {
         socket.on('init', function (data) {
 			console.log('New ActionAtADistance Socket.io connection.');
-			socket.guid = uuid.v4();
+			socket.uuid = nodeUuid.v4();
 			//Add the sockUser to the list of socket connections
 			addSockUser(socket);
         });
 
         socket.on('disconnect', function(){
-            if (typeof socket.guid !== 'undefined') {
-                console.log('removing socket user ' + socket.guid);
-                bustGhost(socket.guid);
-                removeSockUser(socket.guid);
+            if (typeof socket.uuid !== 'undefined') {
+                console.log('removing socket user ' + socket.uuid);
+                bustGhost(socket.uuid);
+                removeSockUser(socket.uuid);
             }
         });
 
-        socket.on('open', function (data) {
-            console.log('open called for url ' + data.url + ' for guid ' + data.guid);
+        socket.on('start', function (data) {
+            console.log('start called for url ' + data.url + ' for uuid ' + socket.uuid);
             spookyStart(socket.spooky, data);
         });
 
         socket.on('evaluate', function (data) {
             try {
-                console.log('evaluate called with spooky action ' + data.action + ' for guid ' + socket.guid);
-                var sockUser = getSockUser(socket.guid);
+                console.log('evaluate called with spooky action ' + data.action + ' for uuid ' + socket.uuid);
+                var sockUser = getSockUser(socket.uuid);
 
                 // spookyAction(sockUser.socket.spooky, data.action);
                 sockUser.spookySocket.emit('spookyAction', data.action);
@@ -66,9 +66,9 @@ function setup() {
 
         socket.on('callback', function (data) {
             try {
-                console.log('callback called for ' + data.guid);
+                console.log('callback called for ' + data.uuid);
                 
-                var sockUser = getSockUser(data.guid);
+                var sockUser = getSockUser(data.uuid);
 
                 if (typeof sockUser === 'undefined') {
                     console.log("sockUser === 'undefined'");
@@ -86,26 +86,26 @@ function setup() {
 }
 
 function addSockUser(socket) {
-    console.log('New SockUser for guid ' + socket.guid);
+    console.log('New SockUser for uuid ' + socket.uuid);
     socket.spooky = evoke(socket);
 
-    var sockUser = new sockUserModel.SockUser({guid: socket.guid, socket: socket, spooky: socket.spooky});
+    var sockUser = new sockUserModel.SockUser({uuid: socket.uuid, socket: socket, spooky: socket.spooky});
     sockUserCollection.add(sockUser);
 }
 
-function getSockUserCount(guid) {
-    return sockUserCollection.where({"guid": guid}).length;
+function getSockUserCount(uuid) {
+    return sockUserCollection.where({"uuid": uuid}).length;
 }
 
-function getSockUser(guid) {
-    var sockUser = sockUserCollection.where({"guid": guid});
+function getSockUser(uuid) {
+    var sockUser = sockUserCollection.where({"uuid": uuid});
     return sockUser ? sockUser[0] : null;
 }
 
-function removeSockUser(guid) {
-    var sockUserResult = sockUserCollection.where({"guid": guid});
+function removeSockUser(uuid) {
+    var sockUserResult = sockUserCollection.where({"uuid": uuid});
 
-    console.log('Removing ActionAtADistance sockUser guid ' + guid + '. SockUser Count ' + sockUserResult.length);
+    console.log('Removing ActionAtADistance sockUser uuid ' + uuid + '. SockUser Count ' + sockUserResult.length);
 
     if (sockUserResult.length > 0) {
         sockUserCollection.remove(sockUserResult);
@@ -113,7 +113,7 @@ function removeSockUser(guid) {
 }
 
 function evoke(socket) {
-    var cookie = cookieFileName(socket.guid);
+    var cookie = cookieFileName(socket.uuid);
     if (fs.existsSync(cookie))
         fs.unlinkSync(cookie);
 	
@@ -132,7 +132,7 @@ function evoke(socket) {
                  loadPlugins: false,         // use these settings
                  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4'
             },
-            guid: socket.guid
+            uuid: socket.uuid
         }
     }, function (err) {
         if (err) {
@@ -168,24 +168,24 @@ function evoke(socket) {
 	return spooky;
 }
 
-function cookieFileName(guid) {
-    return cookieFile + guid + '.txt';
+function cookieFileName(uuid) {
+    return cookieFile + uuid + '.txt';
 }
 
 function readyForSpookyAction(socket) {
-    socket.emit('initResp', {guid: socket.guid});
+    socket.emit('initResp', {uuid: socket.uuid});
 }
 
 function spookyStart(spooky, data) {
     spooky.start(data.url, function(res) {
         console.log("INITIAL PAGE LOADED");
-        delete guid;
+        delete uuid;
 
         this.thenEvaluate(function (js) {
             eval(js);
             saveCookie();
-            socket.emit('callback', {'action': 'start', 'guid': guid});
-        }, 'guid=\'' + this.options.guid + '\';');
+            socket.emit('callback', {'action': 'start', 'uuid': uuid});
+        }, 'uuid=\'' + this.options.uuid + '\';');
     });
 
     //This keeps the Sppoky.js code from timing out
@@ -196,8 +196,8 @@ function spookyStart(spooky, data) {
     spooky.run();
 }
 
-function bustGhost(guid) {
-    var sockUser = getSockUser(guid);
+function bustGhost(uuid) {
+    var sockUser = getSockUser(uuid);
     sockUser.spooky.destroy();
     delete sockUser.spooky;
 }

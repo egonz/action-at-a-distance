@@ -1,50 +1,49 @@
 'use strict';
 
-actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, ActionAtADistance) {
+actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope) {
 
-	ActionAtADistance.on('connect', function () {
-        ActionAtADistance.emit('init');
+    var startUrl = 'http://www.google.com/search?q=casperjs';
+    var spookyActions = []; 
+
+    spookyActions.push('var links=document.querySelectorAll("h3.r a");' +
+        'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
+        'var spookyResult = {data: links};');
+
+    if (typeof $rootScope.googleActionAtADistance === 'undefined') {
+        $rootScope.googleActionAtADistance = actionAtADistance();
+    }
+
+    var googleActionAtADistance = $rootScope.googleActionAtADistance;
+
+    googleActionAtADistance.onConnect(function() {
+        console.log('onConnect Google');
+        googleActionAtADistance.start(startUrl);
+        $scope.uuid = googleActionAtADistance.uuid();
     });
 
-    ActionAtADistance.on('initResp', function (data) {
-        $scope.ActionAtADistanceGuid = data.guid;
-       	ActionAtADistance.guid = $scope.ActionAtADistanceGuid;
-        console.log('ActionAtADistanceGuid ' + $scope.ActionAtADistanceGuid);
-        ActionAtADistance.emit('open', {guid: $scope.ActionAtADistanceGuid, url: 'http://www.google.com/search?q=casperjs'});
+    googleActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
+        $scope.$apply(function () {
+            $scope.spookyAction = spookyActions[0];
+        });
     });
 
-    ActionAtADistance.on('callback', function (data) {
-        if (data.action === 'start') {
-            $scope.spookyAction = getSpookyAction($scope.ActionAtADistanceGuid);
-
-        } else if (data.action === 'evaluate') {
+    googleActionAtADistance.onEvaluateResponse(function(data) {
+        $scope.$apply(function () {
             $scope.spooky = data.result;
-        }
+        });
     });
 
-    ActionAtADistance.on('disconnect', function () {
-        console.log('disconnect');
-    });
+    if (googleActionAtADistance.connected()) {
+        console.log('Page already loaded.');
+        $scope.spookyAction = spookyActions[0];
+        $scope.uuid = googleActionAtADistance.uuid();
+    }
 
     $scope.actionAtADistance = function() {
-        console.log('action at a distance');
-        ActionAtADistance.emit('evaluate', {guid: $scope.ActionAtADistanceGuid, action: $scope.spookyAction});
+        googleActionAtADistance.evaluate({action: $scope.spookyAction});
     };
 
-    $scope.reloadLastView = function() {
-    	$scope.ActionAtADistanceGuid  = ActionAtADistance.guid;
-        $scope.spookyAction = getSpookyAction($scope.ActionAtADistanceGuid);
-    };
-
-    function getSpookyAction(guid) {
-        return 'var guid="' + guid + '";' +
-                'var links=document.querySelectorAll("h3.r a");' +
-                'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
-                'var spookyResult = {data: links};';
-
-// '$("h3.r a").livequery(function(){ console.log("Search results found"); });';
-
-//                 'var guid="' + guid + '";' +
+// 'var uuid="' + uuid + '";' +
 // '$(\'input[name="q"]\').simulate("key-sequence", {sequence: "casperjs"});' +
 // 'waitFor(function() { ' +
 // 'function() { ' +
@@ -56,9 +55,7 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, ActionAtADi
 // 'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
 // '}); ' +
 // 'var spookyResult = {data: links};'
-    }
+    // }
 
-    if (typeof ActionAtADistance.guid !== 'undefined' && ActionAtADistance.guid !== null)
-		$scope.reloadLastView();
 
 });

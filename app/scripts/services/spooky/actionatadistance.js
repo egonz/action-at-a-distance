@@ -7,7 +7,7 @@ var actionatadistanceServices = angular.module('actionatadistance.services', [])
 actionatadistanceServices.factory('ActionAtADistance', function ($rootScope) {
     var socket = io.connect('http://localhost:1313');
     return {
-        guid: null,
+        uuid: null,
         on: function (eventName, callback) {
             socket.on(eventName, function () {
                 var args = arguments;

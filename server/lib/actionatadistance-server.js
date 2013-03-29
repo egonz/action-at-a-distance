@@ -1,4 +1,4 @@
-var socket, cookie, guid;
+var socket, cookie, uuid;
 
 function waitFor(testFx, onReady, timeOutMillis) {
     var maxtimeOutMillis = timeOutMillis ? timeOutMillis : 3000, //< Default Max Timout is 3s
@@ -23,11 +23,11 @@ function waitFor(testFx, onReady, timeOutMillis) {
         }, 250); //< repeat check every 250ms
 }
 
-function sendCallback(guid, spookyResult) {
+function sendCallback(uuid, spookyResult) {
     try {
         console.log("SENDCALLBACK");
 
-        var spookyCallbackResp = {'action': 'evaluate', 'guid': guid};
+        var spookyCallbackResp = {'action': 'evaluate', 'uuid': uuid};
         if (typeof spookyResult !== 'undefined') spookyCallbackResp.result = spookyResult;
 
         socket.emit('callback', spookyCallbackResp);
@@ -37,8 +37,8 @@ function sendCallback(guid, spookyResult) {
 }
 
 function saveCookie(data) {
-    console.log('SAVING GUID ' + guid + ' plus optional data ' + data);
-    var cookieData = {guid: guid};
+    console.log('SAVING uuid ' + uuid + ' plus optional data ' + data);
+    var cookieData = {uuid: uuid};
     
     if (typeof data !== 'undefined')
         cookieData.data = data;
@@ -48,6 +48,7 @@ function saveCookie(data) {
 
 function readCookie() {
     var cookie = $.cookie('actionAtADistance');
+    console.log('read cookie ' + cookie);
     if (typeof cookie !== 'undefined') {
         return JSON.parse(cookie);
     }
@@ -55,10 +56,13 @@ function readCookie() {
 
 function createSpookyActionListener() {
     socket.on('spookyAction', function(action) {
+        console.log('inside spookyAction');
         try {
-            console.log('Within spookyAction.');
             eval(action);
-            sendCallback(guid, spookyResult);
+            
+            if (typeof uuid !== 'undefined' && typeof spookyResult !== 'undefined') {
+                sendCallback(uuid, spookyResult);
+            }
         } catch (err) {
             console.log('Sppoky Action Error ' + err);
         }
@@ -70,14 +74,14 @@ $(document).ready(function() {
 
     console.log('DOCUMENT LOADED');
     try {
+        createSpookyActionListener();
+
         cookie = readCookie();
         if (typeof cookie !== 'undefined') {
-            cookie && console.log('GUID from actionAtADistance COOKIE ' + cookie.guid);
-            guid = cookie.guid;
+            cookie && console.log('uuid from actionAtADistance COOKIE ' + cookie.uuid);
+            uuid = cookie.uuid;
 
-            createSpookyActionListener();
-
-            socket.emit('callback', {action: 'documentLoaded', guid: cookie.guid, documentLocationHref: document.location.href});
+            socket.emit('callback', {action: 'documentLoaded', uuid: cookie.uuid, documentLocationHref: document.location.href});
             console.log('SENT documentLoaded MESSAGE.');
         }
     } catch (err) {
