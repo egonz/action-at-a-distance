@@ -31,9 +31,7 @@ Load a remote nonlocal page, send it Javascript (through Socket.io), and receive
     actionAtADistance.on('save', function(data) {
         console.log('PROCESS SAVE ' + data);
     });
-
     ...
-
     actionAtADistance.stop();
 
 
@@ -89,9 +87,7 @@ ActionAtADistance can also be used on the server, without a web client.
 ### Example (from [server/index.html](https://github.com/egonz/action-at-a-distance/blob/master/server/index.js))
 
     var ActionAtADistance = require('action-at-a-distance');
-    
     ...
-
     actionAtADistance.addNodeClient();
 
     actionAtADistance.on('initResp', function (data) {
