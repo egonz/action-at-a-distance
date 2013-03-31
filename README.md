@@ -47,7 +47,7 @@ JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas
 
     <script src="app/scripts/action-at-a-distance.js"></script>
 
-### Example (from the [Google](https://github.com/egonz/action-at-a-distance/blob/master/app/scripts/controllers/spooky/spookyGoogle.js) demo, san AngularJS code):
+### Example (from the [Google demo](https://github.com/egonz/action-at-a-distance/blob/master/app/scripts/controllers/spooky/spookyGoogle.js), san AngularJS code):
 
     spookyActions.push('$(\'input[name="q"]\').val("CASPERJS");' +
         '$(\'button[name="btnK"]\').submit();');
