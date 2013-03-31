@@ -6,7 +6,7 @@ A socket based Javascript screen scraping NodeJS module; based on SpookyJS. Stat
 
 Communication occurs through Socket.io, which is automagically injected into every remote nonlocal page; loaded in a headless PhantomJS browser on the server.
 
-Load a remote nonlocal page, send it Javascript (through Socket.io), and receive the results in your browser, and on the server. Results can be sent asynchronously as they appear on the remote page; see the Twitter demo.
+Remote nonlocal pages are sent Javascript (through Socket.io), and the local client receives results through the same socket; whether in the browser or on the server. Results can be sent asynchronously as they appear on the nonlocal page; see the Twitter demo.
 
 
 ## Install
