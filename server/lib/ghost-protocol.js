@@ -1,5 +1,5 @@
 var fs = require('fs'),
-	Spooky = require('../../vendor/SpookyJS-Cookies/lib/spooky');
+	Spooky = require('spooky');
 
 
 var ghostProtocol = function(baseDir) {

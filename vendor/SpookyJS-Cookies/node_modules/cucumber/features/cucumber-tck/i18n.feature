@@ -1,1 +1,0 @@
-Feature: Internationalization (I18n)

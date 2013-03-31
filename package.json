@@ -19,7 +19,8 @@
     "express": "3.0.0", 
     "socket.io": "~0.9.13", 
     "underscore": "~1.4.4", 
-    "node-uuid": "1.4.0"
+    "node-uuid": "1.4.0",
+    "spooky": "git://github.com/egonz/SpookyJS-Cookies.git"
   },
   "devDependencies": {
     "mocha": "1.3.x",
