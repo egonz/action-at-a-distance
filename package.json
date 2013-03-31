@@ -19,8 +19,7 @@
     "express": "3.0.0", 
     "socket.io": "~0.9.13", 
     "underscore": "~1.4.4", 
-    "node-uuid": "1.4.0", 
-    "spooky": "0.2.1"
+    "node-uuid": "1.4.0"
   },
   "devDependencies": {
     "mocha": "1.3.x",
@@ -33,6 +32,6 @@
     "url": "https://github.com/egonz/action-at-a-distance.git"
   },
   "license": "MIT",
-  "readme": "# ActionAtADistance\n\nA socket based Javascript screen scraping NodeJS module.\n\nUse [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/).\n Execute Javascript in a non-local page, and return nodes and parse them locally.\n\n## Install\n\n## Demos\n\nIncludes demos built with [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack) and AngularJS. To run the demos:\n\n1. Install Yeoman Express-Stack\n 2. git clone https://github.com/egonz/action-at-a-distance.git; cd $_\n 2. npm install\n 3. yeomen server\n\n",
+  "readme": "# ActionAtADistance\n\nA socket based Javascript screen scraping NodeJS module.\n\nUse [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/).\n Execute Javascript in a non-local page, and return nodes and parse them locally.\n\n## Install\n\n### Prerequisites (same as [SpookyJS](https://github.com/WaterfallEngineering/SpookyJS))\n\n* Node.js\n* PhantomJS\n* CasperJS## Demos\n\nIncludes demos built with [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack) and AngularJS. To run the demos:\n\n1. Install Yeoman Express-Stack\n 2. git clone https://github.com/egonz/action-at-a-distance.git; cd $_\n 2. npm install\n 3. yeomen server\n\n",
   "readmeFilename": "README.md"
 }

@@ -8,6 +8,13 @@ Execute Javascript in a nonlocal page, and return nodes and parse them locally.
 
 ## Install
 
+    npm install action-at-a-distance
+
+### Prerequisites (same as [SpookyJS](https://github.com/WaterfallEngineering/SpookyJS))
+
+* Node.js
+* PhantomJS
+* CasperJS
 
 ## Demos
 
@@ -31,6 +38,8 @@ run the demos:
         console.log('PROCESS SAVE ' + data);
     });
 
+    //There are also EventEmitter events for evaluate and callback 
+
     ...
 
     actionAtADistance.stop();
@@ -40,6 +49,12 @@ run the demos:
 JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas](http://html2canvas.hertzen.com/) (TODO) are injected into each page that are loaded. LiveQuery allows for processing of DOM elements loaded asynchronously adfter the page loads. html2canvas adds support for taking screen shots after page loads.
 
 [JsonML](https://github.com/mckamey/jsonml/) has been added for serializing the DOM to a datastore (e.g. Mongodb).
+
+Includes:
+
+    <script src="http://localhost:1313/socket.io/socket.io.js"></script>
+
+    <script src="app/scripts/action-at-a-distance.js"></script>
 
 Example:
 
@@ -76,16 +91,17 @@ Example:
 
 ## TODO
 
-* Switch to using SpookyCookies.
-* Integrate SockMonkey.js
-
 ### Client API
 
 Add html2canvas. Save canvas to PNG. Return URL.
 
 ### Server API
 
+Add methods for directly driving the module using Node. In the meantime you can use [socket.io-client for Node](https://github.com/LearnBoost/socket.io-client), and connect to http://localhost:1313.
+
 ### Client Demo
+
+Create a page with a URL field for testing random pages.
 
 ### Completed Client API
 

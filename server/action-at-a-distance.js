@@ -37,8 +37,13 @@ var express = require('express'),
         try {
             console.log('evaluate called with spooky action ' + data.action + ' for uuid ' + socket.uuid);
             var nonLocalCorrelation = _nonLocalCorrelations.getNonLocalCorrelation(socket.uuid);
-            nonLocalCorrelation.spookySock.emit('spookyAction', data.action);
-            console.log('Sent evaluate request to spookyAction.');
+            
+            if (typeof nonLocalCorrelation !== 'undefined') {
+                nonLocalCorrelation.spookySock.emit('spookyAction', data.action);
+                console.log('Sent evaluate request to spookyAction.');
+            }
+
+            _that.emit('evaluate', data);
         } catch (err) {
             console.error('Evaluate error ' + err);
         }
@@ -49,13 +54,12 @@ var express = require('express'),
             console.log('callback called for ' + data.uuid);
             var nonLocalCorrelation = _nonLocalCorrelations.getNonLocalCorrelation(data.uuid);
 
-            if (typeof nonLocalCorrelation === 'undefined') {
-                console.log("nonLocalCorrelation === 'undefined'");
-                return;
+            if (typeof nonLocalCorrelation !== 'undefined') {
+                nonLocalCorrelation.spookySock = socket;
+                nonLocalCorrelation.socket.emit('callback', data);
             }
 
-            nonLocalCorrelation.spookySock = socket;
-            nonLocalCorrelation.socket.emit('callback', data);
+            _that.emit('callback', data);
         } catch (err) {
             console.error('callback error ' + err);
         }
