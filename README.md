@@ -1,30 +1,23 @@
 # ActionAtADistance
 
-A socket based Javascript screen scraping NodeJS module.
+A socket based Javascript screen scraping NodeJS module; based on SpookyJS. Static and dynamic Ajax pages can be scraped on the client (in a Browser), or on the server using Node.js.
 
-Use [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/). 
-Execute Javascript in a nonlocal page, and return nodes and parse them locally.
+### How does it work?
+
+Communication occurs through Socket.io, which is automagically injected into every remote nonlocal page; loaded in a headless PhantomJS browser on the server.
+
+Load a remote nonlocal page, send it Javascript (through Socket.io), and receive the results in your browser, and on the server. Results can be sent asynchronously as they appear on the remote page; see the Twitter demo.
 
 
 ## Install
 
     npm install action-at-a-distance
 
-### Prerequisites (same as [SpookyJS](https://github.com/WaterfallEngineering/SpookyJS))
+### Prerequisites (the same as SpookyJS)
 
 * Node.js
 * PhantomJS
 * CasperJS
-
-## Demos
-
-Includes demos built with [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack) and AngularJS. To
-run the demos: 
-
-1. Install Yeoman Express-Stack
-2. git clone https://github.com/egonz/action-at-a-distance.git; cd $_
-2. npm install
-3. yeomen server
 
 ## NodeJS
 
@@ -33,16 +26,16 @@ run the demos:
 
     actionAtADistance.start();
 
-    //A callback that can be initiated on the client using the nonlocal call save(data);
+    // A callback that can be initiated from the nonlocal page using the ActionAtADistance.saveHtmlText(html), 
+    // or ActionAtADistance.saveNodes(nodes) methods;
     actionAtADistance.on('save', function(data) {
         console.log('PROCESS SAVE ' + data);
     });
 
-    //There are also EventEmitter events for evaluate and callback 
-
     ...
 
     actionAtADistance.stop();
+
 
 ## Clientside Javascript
 
@@ -50,13 +43,13 @@ JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas
 
 [JsonML](https://github.com/mckamey/jsonml/) has been added for serializing the DOM to a datastore (e.g. Mongodb).
 
-Includes:
+### Includes:
 
     <script src="http://localhost:1313/socket.io/socket.io.js"></script>
 
     <script src="app/scripts/action-at-a-distance.js"></script>
 
-Example:
+### Example (from the [Google](https://github.com/egonz/action-at-a-distance/blob/master/app/scripts/controllers/spooky/spookyGoogle.js) demo, san AngularJS code):
 
     spookyActions.push('$(\'input[name="q"]\').val("CASPERJS");' +
         '$(\'button[name="btnK"]\').submit();');
@@ -89,6 +82,48 @@ Example:
     }
 
 
+## Node Client
+
+ActionAtADistance can also be used on the server, without a web client.
+
+### Example (from [server/index.html](https://github.com/egonz/action-at-a-distance/blob/master/server/index.js))
+
+    var ActionAtADistance = require('action-at-a-distance');
+    
+    ...
+
+    actionAtADistance.addNodeClient();
+
+    actionAtADistance.on('initResp', function (data) {
+        console.log('Connected with NodeClient. Assigned UUID ' + data.uuid);
+        actionAtADistance.nodeClientStart('http://en.wikipedia.org/wiki/Spooky_the_Tuff_Little_Ghost');
+    });
+
+    actionAtADistance.on('callback', function (data) {
+        if (data.action === 'start') {
+            console.log('Start Callback. Sending Evaluate...');
+            actionAtADistance.nodeClientEvaluate('ActionAtADistance.setSpookyResult({'+
+                'data: $("div#mw-content-text").html()});console.log("Hello, from " + document.title);');
+        }else if (data.action === 'documentLoaded') {
+            console.log('Document loaded: ' + data.documentLocationHref);
+        } else if (data.action === 'evaluate') {
+            console.log('Evaluate result: ' + data.result);
+        }
+    });
+
+
+## Demos
+
+Included demos are built with [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack) and AngularJS. To
+run the demos follow these steps:
+
+1. Install Yeoman Express-Stack
+2. git clone https://github.com/egonz/action-at-a-distance.git; cd $_
+2. npm install
+3. yeomen server
+
+----
+
 ## TODO
 
 ### Client API
@@ -97,22 +132,6 @@ Add html2canvas. Save canvas to PNG. Return URL.
 
 ### Server API
 
-Add methods for directly driving the module using Node. In the meantime you can use [socket.io-client for Node](https://github.com/LearnBoost/socket.io-client), and connect to http://localhost:1313.
-
 ### Client Demo
 
 Create a page with a URL field for testing random pages.
-
-### Completed Client API
-
-* Save URL and on load of the Controller check if the URL is different, and if so send disconnect,
-  and start messages.
-
-* Develop client API to encapsulate the Socket.io protocol.
-
-### Completed Server API
-
-* Create a cookie and store the UUID.
-	* Use https://github.com/carhartl/jquery-cookie
-* Create an onload page listener.
-	* Emit a Socket.io event indicating the URL has changed. Use the UUID stored in the actionatadistanceCookie.

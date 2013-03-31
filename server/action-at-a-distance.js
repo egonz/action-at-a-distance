@@ -138,7 +138,19 @@ var express = require('express'),
 
     ActionAtADistance.prototype.stop = function() {
         server.close();
-    };    
+    };
+
+    ActionAtADistance.prototype.addNodeClient = function() {
+        handleInit(this);
+    };
+
+    ActionAtADistance.prototype.nodeClientStart = function(url) {
+        handleStart(this, {url: url});
+    };
+
+    ActionAtADistance.prototype.nodeClientEvaluate = function(data) {
+        handleEvaluate(this, {action: data});
+    };
 
 })();
 
