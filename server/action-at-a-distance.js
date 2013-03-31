@@ -42,8 +42,6 @@ var express = require('express'),
                 nonLocalCorrelation.spookySock.emit('spookyAction', data.action);
                 console.log('Sent evaluate request to spookyAction.');
             }
-
-            _that.emit('evaluate', data);
         } catch (err) {
             console.error('Evaluate error ' + err);
         }
@@ -58,8 +56,6 @@ var express = require('express'),
                 nonLocalCorrelation.spookySock = socket;
                 nonLocalCorrelation.socket.emit('callback', data);
             }
-
-            _that.emit('callback', data);
         } catch (err) {
             console.error('callback error ' + err);
         }

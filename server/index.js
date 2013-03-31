@@ -26,7 +26,7 @@ actionAtADistance.on('callback', function (data) {
     }else if (data.action === 'documentLoaded') {
         console.log('Document loaded: ' + data.documentLocationHref);
     } else if (data.action === 'evaluate') {
-        console.log('Evaluate result: ' + data.result);
+        console.log('Evaluate result: ' + JSON.stringify(data.result));
     }
 });
 
