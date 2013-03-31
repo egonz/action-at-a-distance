@@ -4,29 +4,84 @@
 	</div>
 </div>
 
-<div class="row">
-	<div class="span7">
-		<div style="height: 30px;">
-			<div ng-show="uuid">
-				Your Spooky UUID: {{uuid}}
-			</div>
-		</div>
+<div class="row" style="height: 30px;">
+	<div class="span8">
+		Your Spooky UUID: {{uuid}}
+	</div>
+</div>
 
-		<div>
-			<textarea ng-model="spookyAction" style="margin: 0px 0px 10px; width: 492px; height: 169px;">
-			</textarea>
+<div class="row">
+	<div class="span8">
+		<div class="spooky-code-mirror">
+			<textarea id="code"></textarea>
 		</div>
 
 		<div>
 			<input type="button" class="btn btn-primary" ng-click="actionAtADistance()" value="Action At A Distance" ng-show="spookyAction" ng-disabled="disableSpookyButton">
 		</div>
+
+		<div ng-hide="spookyAction">
+			<div class="loading">
+				Loading...
+			</div>
+			<div class="span4 loading-bar">
+				<div class="progress progress-striped active">
+					<div class="bar" style="width: 90%;"></div>
+				</div>
+			</div>
+		</div>
 	</div>
 
-	<div class="span6">
+	<div class="span6 well" style="height: 350px; overflow-y: auto;">
 		<div ng:repeat="item in spooky" ng-bind-html-unsafe="item" style="margin: 0px 0px 5px 0px;"></div>
 	</div>
 </div>
 
-<div>
-	{{data.result.data}}
+<div class="row code-sample">
+	<div class="span6">
+		<h4>Code Sample</h4>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span12">
+		<pre class="prettyprint linenums languague-javascript">
+var startUrl = 'http://www.bing.com/social';
+var spookyActions = [];
+
+spookyActions.push('$("input#sb_form_q").val("youtube");' +
+    '$("input#sb_form_go").click();');
+spookyActions.push('var spookyResult;' +
+    '$("ul.sn_updates li:first-child").livequery(function() { ' +
+    'var aaad_sn_updates=$("ul.sn_updates li:first-child");' +
+    'var spookyResult={data: aaad_sn_updates.html()};ActionAtADistance.saveNodes(aaad_sn_updates);' +
+    'ActionAtADistance.sendCallback(spookyResult);});');
+
+var bingSocialActionAtADistance = ActionAtADistance();;
+
+bingSocialActionAtADistance.onConnect(function() {
+    bingSocialActionAtADistance.start(startUrl);
+});
+
+bingSocialActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
+    loadSpookyAction(documentLocationHref);
+});
+
+bingSocialActionAtADistance.onEvaluateResponse(function(data) {
+    spooky.unshift(data.result.data);
+});
+
+function loadSpookyAction(documentLocationHref) {
+    if (documentLocationHref === 'http://www.bing.com/social') {
+        spookyAction = spookyActions[0];
+    } else if (documentLocationHref !== 'http://www.bing.com/social') {
+        spookyAction = spookyActions[1];
+    }
+}
+
+$scope.actionAtADistance = function() {
+    bingSocialActionAtADistance.evaluate({action: spookyAction});
+};
+		</pre>
+	</div>
 </div>

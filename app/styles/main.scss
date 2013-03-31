@@ -8,3 +8,26 @@
 	color: white;
 	background: #000000 url("http://localhost:3501/images/bg.png");
 }
+
+.loading {
+	font-style: italic;
+	font-weight: bold; 
+	font-size: 17pt;
+	float: left;
+}
+
+.loading-bar {
+	text-align: left; 
+	margin-left: 20px; 
+	padding-left: 0px;
+	float: left;
+}
+
+.spooky-code-mirror {
+	margin-bottom: 30px;
+	border: 3px solid #CCC;
+}
+
+.code-sample {
+	margin-top: 25px;	
+}

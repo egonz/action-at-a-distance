@@ -1,6 +1,6 @@
 'use strict';
 
-var actionatadistanceApp = angular.module('actionatadistanceApp', ['actionatadistance.services'])
+var actionatadistanceApp = angular.module('actionatadistanceApp', [])
   .config(['$routeProvider', function($routeProvider) {
     $routeProvider
       .when('/', {
@@ -18,10 +18,6 @@ var actionatadistanceApp = angular.module('actionatadistanceApp', ['actionatadis
       .when('/spooky/bing/social', {
         templateUrl: 'views/spooky/spookyBingSocial.html',
         controller: 'SpookyBingSocialCtrl'
-      })
-      .when('/spooky/facebook', {
-        templateUrl: 'views/spooky/spookyFacebook.html',
-        controller: 'SpookyFacebookCtrl'
       })
       .otherwise({
         redirectTo: '/'

@@ -11,17 +11,68 @@
 </div>
 
 <div class="row">
-	<div class="span7">
-		<div>
-			<textarea ng-model="spookyAction" style="margin: 0px 0px 10px; width: 492px; height: 169px;">
-			</textarea>
+	<div class="span8">
+		<div class="spooky-code-mirror">
+			<textarea id="code"></textarea>
 		</div>
 
 		<div>
 			<input type="button" class="btn btn-primary" ng-click="actionAtADistance()" value="Action At A Distance" ng-show="spookyAction">
 		</div>
+
+		<div ng-hide="spookyAction">
+			<div class="loading">
+				Loading...
+			</div>
+			<div class="span4 loading-bar">
+				<div class="progress progress-striped active">
+					<div class="bar" style="width: 90%;"></div>
+				</div>
+			</div>
+		</div>
 	</div>
 
-	<div class="span8" ng-bind-html-unsafe="spooky.data">
+	<div class="span8 well" ng-bind-html-unsafe="spooky.data" style="height: 350px; overflow-y: scroll;">
+	</div>
+</div>
+
+<div class="row code-sample">
+	<div class="span6">
+		<h4>Code Sample</h4>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span12">
+		<pre class="prettyprint linenums languague-javascript">
+var startUrl = 'http://en.wikipedia.org/wiki/Spooky_the_Tuff_Little_Ghost';
+var spookyActions = [];
+
+spookyActions.push('ActionAtADistance.setSpookyResult(' +
+    '{data: $("div#mw-content-text").html()});' +
+    'console.log("Hello, from " + document.title);');
+
+var wikiActionAtADistance = ActionAtADistance();
+
+wikiActionAtADistance.onConnect(function() {
+    wikiActionAtADistance.start(startUrl);
+});
+
+wikiActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
+    spookyAction = spookyActions[0];
+});
+
+wikiActionAtADistance.onEvaluateResponse(function(data) {
+    spooky = data.result;
+});
+
+if (wikiActionAtADistance.connected()) {
+    spookyAction = spookyActions[0];
+}
+
+$scope.actionAtADistance = function() {
+    wikiActionAtADistance.evaluate({action: spookyAction});
+};
+		</pre>
 	</div>
 </div>

@@ -3,7 +3,7 @@
 A socket based Javascript screen scraping NodeJS module.
 
 Use [Socket.io](http://socket.io) to drive [CasperJS](http://casperjs.org/). 
-Execute Javascript in a non-local page, and return nodes and parse them locally.
+Execute Javascript in a nonlocal page, and return nodes and parse them locally.
 
 
 ## Install
@@ -21,15 +21,25 @@ run the demos:
 
 ## NodeJS
 
-	var actionatadistance = require('actionatadistance').configure();
-	...
-	actionatadistance.start();
-	...
-	actionatadistance.stop();
+	var ActionAtADistance = require('action-at-a-distance');
+    var actionAtADistance = new ActionAtADistance();
+
+    actionAtADistance.start();
+
+    //A callback that can be initiated on the client using the nonlocal call save(data);
+    actionAtADistance.on('save', function(data) {
+        console.log('PROCESS SAVE ' + data);
+    });
+
+    ...
+
+    actionAtADistance.stop();
 
 ## Clientside Javascript
 
 JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas](http://html2canvas.hertzen.com/) (TODO) are injected into each page that are loaded. LiveQuery allows for processing of DOM elements loaded asynchronously adfter the page loads. html2canvas adds support for taking screen shots after page loads.
+
+[JsonML](https://github.com/mckamey/jsonml/) has been added for serializing the DOM to a datastore (e.g. Mongodb).
 
 Example:
 
@@ -39,7 +49,8 @@ Example:
         'var links=document.querySelectorAll("h3.r a");' +
         'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
         'var spookyResult = {data: links};' +
-        'sendCallback(uuid, spookyResult);' +
+        'ActionAtADistance.saveHtmlText(links);' +
+        'ActionAtADistance.sendCallback(spookyResult);' +
         '});');
 
     googleActionAtADistance.onConnect(function() {

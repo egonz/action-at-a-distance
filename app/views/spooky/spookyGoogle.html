@@ -11,20 +11,81 @@
 </div>
 
 <div class="row">
-	<div class="span7">
-		<div>
-			<textarea ng-model="spookyAction" style="margin: 0px 0px 10px; width: 492px; height: 169px;">
-			</textarea>
+	<div class="span8">
+		<div class="spooky-code-mirror">
+			<textarea id="code"></textarea>
 		</div>
 
 		<div>
 			<input type="button" class="btn btn-primary" ng-click="actionAtADistance()" value="Action At A Distance" ng-show="spookyAction" ng-disabled="disableSpookyButton">
 		</div>
+
+		<div ng-hide="spookyAction">
+			<div class="loading">
+				Loading...
+			</div>
+			<div class="loading-bar">
+				<div class="progress progress-striped active span4">
+					<div class="bar" style="width: 90%;"></div>
+				</div>
+			</div>
+		</div>
 	</div>
 
-	<div class="span8">
+	<div class="span8 well" style="height: 350px; overflow-y: scroll;">
 		<div ng-repeat="link in spooky.data">
 			<div><a href="{{link}}" target="_blank">{{link}}</a></div>
 		</div>
+	</div>
+</div>
+
+<div class="row code-sample">
+	<div class="span6">
+		<h4>Code Sample</h4>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span12">
+		<pre class="prettyprint linenums languague-javascript">
+var startUrl = 'http://www.google.com';
+var spookyActions = [];
+
+spookyActions.push('$(\'input[name="q"]\').val("CASPERJS");' +
+    '$(\'button[name="btnK"]\').submit();');
+spookyActions.push('$("h3.r a").livequery(function() { ' +
+    'var links=document.querySelectorAll("h3.r a");' +
+    'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
+    'var spookyResult = {data: links};' +
+    'ActionAtADistance.saveHtmlText(links);' +
+    'ActionAtADistance.sendCallback(spookyResult);' +
+    '});');
+
+var googleActionAtADistance = ActionAtADistance();
+
+googleActionAtADistance.onConnect(function() {
+    googleActionAtADistance.start(startUrl);
+});
+
+googleActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
+    loadSpookyAction(documentLocationHref);
+});
+
+googleActionAtADistance.onEvaluateResponse(function(data) {
+    spooky = data.result;
+});
+
+function loadSpookyAction(documentLocationHref) {
+    if (documentLocationHref === 'http://www.google.com') {
+        spookyAction = spookyActions[0];
+    } else if (documentLocationHref !== 'http://www.google.com') {
+        spookyAction = spookyActions[1];
+    }
+}
+
+actionAtADistance = function() {
+    googleActionAtADistance.evaluate({action: spookyAction});
+};
+		</pre>
 	</div>
 </div>

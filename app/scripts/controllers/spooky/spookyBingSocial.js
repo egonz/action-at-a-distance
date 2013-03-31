@@ -8,14 +8,25 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
 
     $scope.spooky = [];
 
-    spookyActions.push('$("input#sb_form_q").val("youtube");' +
+    spookyActions.push('$("input#sb_form_q").val("youtube");\n' +
         '$("input#sb_form_go").click();');
-    spookyActions.push('var spookyResult;' +
-        '$("ul.sn_updates li:first-child").livequery(function() { ' +
-        'spookyResult={data: $("ul.sn_updates li:first-child").html()};sendCallback(uuid, spookyResult);});');
+    spookyActions.push('var spookyResult;\n' +
+        '$("ul.sn_updates li:first-child").livequery(function() {\n' +
+        '\tvar aaad_sn_updates=$("ul.sn_updates li:first-child");\n' +
+        '\tvar spookyResult={data: aaad_sn_updates.html()};\n' +
+        '\tActionAtADistance.saveNodes(aaad_sn_updates);\n' +
+        '\tActionAtADistance.sendCallback(spookyResult);\n' +
+        '});');
+
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        continueComments: "Enter",
+        theme: "elegant"
+    });
 
     if (typeof $rootScope.bingSocialActionAtADistance === 'undefined') {
-        $rootScope.bingSocialActionAtADistance = actionAtADistance();
+        $rootScope.bingSocialActionAtADistance = ActionAtADistance();
     }
 
     var bingSocialActionAtADistance = $rootScope.bingSocialActionAtADistance;
@@ -54,6 +65,8 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
             });
         }
 
+        editor.setValue($scope.spookyAction);
+
         setTimeout(enableSpookyButton, 1000);
     }
 
@@ -67,5 +80,7 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
         $scope.disableSpookyButton = true;
         bingSocialActionAtADistance.evaluate({action: $scope.spookyAction});
     };
+
+    prettyPrint();
 
 });

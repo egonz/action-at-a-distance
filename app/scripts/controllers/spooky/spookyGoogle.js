@@ -6,17 +6,27 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
     var spookyActions = [];
     $scope.disableSpookyButton = false;
 
-    spookyActions.push('$(\'input[name="q"]\').val("CASPERJS");' +
-        '$(\'button[name="btnK"]\').submit();');
-    spookyActions.push('$("h3.r a").livequery(function() { ' +
-        'var links=document.querySelectorAll("h3.r a");' +
-        'links=Array.prototype.map.call(links,function(e){return e.getAttribute("href")});' +
-        'var spookyResult = {data: links};' +
-        'sendCallback(uuid, spookyResult);' +
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        continueComments: "Enter",
+        theme: "elegant"
+      });
+
+    spookyActions.push('$(\'input[name="q"]\').val("CASPERJS");\n' +
+        '$(\'button[name="btnK"]\').submit();\n');
+    spookyActions.push('$("h3.r a").livequery(function() {\n' +
+        '\tvar links=document.querySelectorAll("h3.r a");\n' +
+        '\tlinks=Array.prototype.map.call(links,function(e){\n' +
+        '\t\treturn e.getAttribute("href")\n' +
+        '\t});\n' +
+        '\tvar spookyResult = {data: links};\n' +
+        '\tActionAtADistance.saveHtmlText(links);\n' +
+        '\tActionAtADistance.sendCallback(spookyResult);\n' +
         '});');
 
     if (typeof $rootScope.googleActionAtADistance === 'undefined') {
-        $rootScope.googleActionAtADistance = actionAtADistance();
+        $rootScope.googleActionAtADistance = ActionAtADistance();
     }
 
     var googleActionAtADistance = $rootScope.googleActionAtADistance;
@@ -56,6 +66,8 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
             });
         }
 
+        editor.setValue($scope.spookyAction);
+
         setTimeout(enableSpookyButton, 1000);
     }
 
@@ -69,5 +81,7 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
         $scope.disableSpookyButton = true;
         googleActionAtADistance.evaluate({action: $scope.spookyAction});
     };
+
+    prettyPrint();
 
 });

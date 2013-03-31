@@ -5,11 +5,21 @@ actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, $rootScope) {
     var startUrl = 'http://en.wikipedia.org/wiki/Spooky_the_Tuff_Little_Ghost';
     var spookyActions = []; 
 
-    spookyActions.push('var spookyResult = {data: $("div#mw-content-text").html()};' +
-                'console.log("Hello, from " + document.title);');
+    spookyActions.push('ActionAtADistance.setSpookyResult(\n' +
+        '\t{data: $("div#mw-content-text").html()}\n' +
+        ');\n' +
+        'console.log("Hello, from " + document.title);');
+
+
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        continueComments: "Enter",
+        theme: "elegant"
+      });
 
     if (typeof $rootScope.wikiActionAtADistance === 'undefined') {
-        $rootScope.wikiActionAtADistance = actionAtADistance();
+        $rootScope.wikiActionAtADistance = ActionAtADistance();
     }
 
     var wikiActionAtADistance = $rootScope.wikiActionAtADistance;
@@ -24,6 +34,8 @@ actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, $rootScope) {
         $scope.$apply(function () {
             $scope.spookyAction = spookyActions[0];
         });
+
+        editor.setValue($scope.spookyAction);
     });
 
     wikiActionAtADistance.onEvaluateResponse(function(data) {
@@ -41,5 +53,7 @@ actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, $rootScope) {
     $scope.actionAtADistance = function() {
         wikiActionAtADistance.evaluate({action: $scope.spookyAction});
     };
+
+    prettyPrint();
 
 });
