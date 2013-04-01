@@ -30,7 +30,9 @@ var express = require('express'),
 
     function handleStart(socket, data) {
         console.log('start called for url ' + data.url + ' for uuid ' + socket.uuid);
-        ghostProtocol.start(socket.ghost, data);
+        if (typeof data.url !== 'undefined') {
+            ghostProtocol.start(socket.ghost, data);
+        }
     }
 
     function handleEvaluate(socket, data) {

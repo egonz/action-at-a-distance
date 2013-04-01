@@ -7,6 +7,10 @@ var actionatadistanceApp = angular.module('actionatadistanceApp', [])
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
+      .when('/spooky/sandbox', {
+        templateUrl: 'views/spooky/spookySandbox.html',
+        controller: 'SpookySandboxCtrl'
+      })
       .when('/spooky/wiki', {
         templateUrl: 'views/spooky/spookyWiki.html',
         controller: 'SpookyWikiCtrl'

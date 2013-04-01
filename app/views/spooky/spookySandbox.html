@@ -1,0 +1,48 @@
+<div class="row">
+	<div class="span6">
+		<h3>Action At A Distance Sandbox Demo</h3>
+	</div>
+</div>
+
+<div class="row" style="height: 30px;">
+	<div class="span8">
+		Your Spooky UUID: {{uuid}}
+	</div>
+</div>
+
+<div class="row">
+	<div class="span8">
+		<div class="input-append">
+		  <input class="span6" type="text" ng-model="startUrl">
+		  <button class="btn" type="button" ng-click="start()" ng-disabled="disableStartButton">Start</button>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span8">
+		<div class="spooky-code-mirror">
+			<textarea id="code"></textarea>
+		</div>
+
+		<div>
+			<input type="button" class="btn btn-primary" ng-click="actionAtADistance()" value="Action At A Distance" ng-disabled="disableSpookyButton">
+		</div>
+	</div>
+
+	<div class="span8 well" ng-bind-html-unsafe="spooky.data" style="height: 350px; overflow-y: auto;">
+	</div>
+</div>
+
+<div class="row code-sample">
+	<div class="span6">
+		<h4>HTML Result</h4>
+	</div>
+</div>
+
+<div class="row">
+	<div class="span12">
+		<pre id="spooky-html" class="prettyprint linenums languague-html">
+		</pre>
+	</div>
+</div>
