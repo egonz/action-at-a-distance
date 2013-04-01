@@ -128,6 +128,8 @@ Add html2canvas. Save canvas to PNG. Return URL.
 
 ### Server API
 
+* Expose the CasperJS timeout.
+
 * Change "start" action to "open". The first "open" action should result in start. Any additional "open" actions should exit the current Spooky thread and create a new one.
 
 ### Client Demo

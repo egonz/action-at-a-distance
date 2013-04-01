@@ -19,6 +19,10 @@ var actionatadistanceApp = angular.module('actionatadistanceApp', [])
         templateUrl: 'views/spooky/spookyGoogle.html',
         controller: 'SpookyGoogleCtrl'
       })
+      .when('/spooky/google/search', {
+        templateUrl: 'views/spooky/spookyGoogleSearch.html',
+        controller: 'SpookyGoogleSearchCtrl'
+      })
       .when('/spooky/bing/social', {
         templateUrl: 'views/spooky/spookyBingSocial.html',
         controller: 'SpookyBingSocialCtrl'

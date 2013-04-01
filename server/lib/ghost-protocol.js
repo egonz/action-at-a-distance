@@ -11,6 +11,7 @@ var ghostProtocol = function(baseDir) {
                           baseDir + '/vendor/jquery-cookie/jquery.cookie.js',
                           baseDir + '/vendor/jsonml-dom.js',
                           baseDir + '/lib/action-at-a-distance-server.js'];
+    var _waitTimeout = 3600000;
 
     function readyForSpookyAction(socket) {
 		socket.emit('initResp', {uuid: socket.uuid});
@@ -21,9 +22,13 @@ var ghostProtocol = function(baseDir) {
 	}
 
     return {
-    	init: function(clientScripts, cookieFile) {
+    	init: function(clientScripts, cookieFile, waitTimeout) {
     		if (typeof clientScripts !== 'undefined') {
         		_clientScripts.concat(clientScripts);
+    		}
+
+    		if (typeof waitTimeout !== 'undefined') {
+    			_waitTimeout = waitTimeout;
     		}
 
     		_cookieFile = cookieFile || '/tmp/actionatadistanceCookie-';

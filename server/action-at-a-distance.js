@@ -118,9 +118,9 @@ var express = require('express'),
     ActionAtADistance.prototype = Object.create(require('events').EventEmitter.prototype);
     ActionAtADistance.prototype.constructor = ActionAtADistance;
 
-    ActionAtADistance.prototype.start = function() {
+    ActionAtADistance.prototype.start = function(waitTimout) {
         _that = this;
-        ghostProtocol.init(this.clientScripts, this.cookieFile);
+        ghostProtocol.init(this.clientScripts, this.cookieFile, waitTimout);
 
         _io = require('socket.io').listen(server);
 
