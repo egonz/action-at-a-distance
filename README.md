@@ -133,3 +133,9 @@ Add html2canvas. Save canvas to PNG. Return URL.
 * Change "start" action to "open". The first "open" action should result in start. Any additional "open" actions should exit the current Spooky thread and create a new one.
 
 ### Client Demo
+
+## License
+
+Action-At-A-Distance is licensed under the MIT license ([MIT_LICENSE.txt](https://github.com/egonz/action-at-a-distance/blob/master/MIT_LICENSE.txt)).
+
+Copyright (c) 2013 Eddie Gonzales
