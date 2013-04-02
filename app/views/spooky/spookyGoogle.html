@@ -17,10 +17,10 @@
 		</div>
 
 		<div>
-			<input type="button" class="btn btn-primary" ng-click="actionAtADistance()" value="Action At A Distance" ng-show="nonLocalDocumentLocation" ng-disabled="disableSpookyButton">
+			<input type="button" class="btn btn-primary" ng-click="actionAtADistance()" value="Action At A Distance" ng-show="spookyAction" ng-disabled="disableSpookyButton">
 		</div>
 
-		<div ng-hide="nonLocalDocumentLocation">
+		<div ng-hide="spookyAction">
 			<div class="loading">
 				Loading...
 			</div>
