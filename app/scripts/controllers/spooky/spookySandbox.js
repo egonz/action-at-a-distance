@@ -25,12 +25,13 @@ actionatadistanceApp.controller('SpookySandboxCtrl', function($scope, $rootScope
 
     var spookyWebsActionAtADistance = $rootScope.spookyWebsActionAtADistance;
 
-    spookyWebsActionAtADistance.onConnect(function() {
-    	$scope.$apply(function () {
-        	$scope.uuid = spookyWebsActionAtADistance.uuid();
-        	$scope.disableStartButton = false;
-        });
+    spookyWebsActionAtADistance.init(function() {
+        onConnect();
     });
+
+    if (spookyWebsActionAtADistance.connected()) {
+        $scope.uuid = spookyWebsActionAtADistance.uuid();
+    }
 
     spookyWebsActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
     	console.log('On Document Loaded ' + documentLocationHref);
@@ -53,8 +54,13 @@ actionatadistanceApp.controller('SpookySandboxCtrl', function($scope, $rootScope
         });
     });
 
-    if (spookyWebsActionAtADistance.connected()) {
-        $scope.uuid = spookyWebsActionAtADistance.uuid();
+    function onConnect() {
+        spookyWebsActionAtADistance.onConnect(function() {
+            $scope.$apply(function () {
+                $scope.uuid = spookyWebsActionAtADistance.uuid();
+                $scope.disableStartButton = false;
+            });
+        });
     }
 
     $scope.start = function() {

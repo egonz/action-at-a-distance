@@ -24,11 +24,15 @@ actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, $rootScope) {
 
     var wikiActionAtADistance = $rootScope.wikiActionAtADistance;
 
-    wikiActionAtADistance.onConnect(function() {
-        console.log('onConnect Wiki');
-        wikiActionAtADistance.start(startUrl);
-        $scope.uuid = wikiActionAtADistance.uuid();
+    wikiActionAtADistance.init(function() {
+        onConnect();
     });
+
+    if (wikiActionAtADistance.connected()) {
+        console.log('Page already loaded.');
+        $scope.spookyAction = spookyActions[0];
+        $scope.uuid = wikiActionAtADistance.uuid();
+    }
 
     wikiActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
         $scope.$apply(function () {
@@ -44,10 +48,12 @@ actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, $rootScope) {
         });
     });
 
-    if (wikiActionAtADistance.connected()) {
-        console.log('Page already loaded.');
-        $scope.spookyAction = spookyActions[0];
-        $scope.uuid = wikiActionAtADistance.uuid();
+    function onConnect() {
+        wikiActionAtADistance.onConnect(function() {
+            console.log('onConnect Wiki');
+            wikiActionAtADistance.start(startUrl);
+            $scope.uuid = wikiActionAtADistance.uuid();
+        });
     }
 
     $scope.actionAtADistance = function() {

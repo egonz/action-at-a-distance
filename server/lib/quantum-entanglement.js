@@ -20,7 +20,6 @@ quantumEntanglement.NonLocalCorrelations = function() {
 
     return {
         addNonLocalCorrelation: function(socket, ghost) {
-            socket.ghost = ghost;
             var nonLocalCorrelation = new quantumEntanglement.NonLocalCorrelation(socket.uuid, socket, ghost);
             nonLocalFields.push(nonLocalCorrelation);
         },

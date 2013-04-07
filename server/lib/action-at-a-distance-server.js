@@ -1,5 +1,5 @@
 var ActionAtADistance = function() {
-    var _socket, _cookie, _uuid, _spookyResult;
+    var _socket, _port = 1313, _cookie, _uuid, _spookyResult;
 
     function _sendCallback() {
         try {
@@ -38,12 +38,16 @@ var ActionAtADistance = function() {
     function _onDocumentLoaded() {
         console.log('processing documentLoaded');
         try {
-            _createSpookyActionListener();
-
             _cookie = _readCookie();
             if (typeof _cookie !== 'undefined') {
                 _cookie && console.log('uuid from actionAtADistance COOKIE ' + _cookie.uuid);
                 _uuid = _cookie.uuid;
+                _port = _cookie.port;
+
+                console.log('Loading Socket.io using port ' + _port);
+                _socket = io.connect('http://localhost:' + _port);
+
+                _createSpookyActionListener();
 
                 _socket.emit('callback', {action: 'documentLoaded', uuid: _cookie.uuid, documentLocationHref: document.location.href});
                 console.log('SENT documentLoaded MESSAGE.');
@@ -76,19 +80,17 @@ var ActionAtADistance = function() {
         saveCookie: function(data) {
             var cookieData = {uuid: _uuid};
 
-            console.log('SAVING uuid ' + _uuid + ' plus optional data ' + data);
+            console.log('SAVING uuid ' + _uuid + ', port: ' + _port + ', plus optional data ' + data);
             
+            cookieData.port = _port;
+
             if (typeof data !== 'undefined')
                 cookieData.data = data;
             
             $.cookie('actionAtADistance', JSON.stringify(cookieData));
         },
 
-        _init: function() {
-            if (typeof _socket === 'undefined') {
-                _socket = io.connect('http://localhost:1313');
-            }
-
+        init: function() {
             _onDocumentLoaded();
         },
 
@@ -105,6 +107,10 @@ var ActionAtADistance = function() {
             _uuid = uuid;
         },
 
+        setPort: function(port) {
+            _port = port || _port;
+        },
+
         setSpookyResult: function(spookyResult) {
             _spookyResult = spookyResult;
         },
@@ -118,10 +124,10 @@ var ActionAtADistance = function() {
 
 $(document).ready(function() {
     console.log('DOCUMENT LOADED');
-    ActionAtADistance._init();
+    ActionAtADistance.init();
 });
 
 $(window).on('hashchange', function() {
     console.log('HASH CHANGE ');
-    ActionAtADistance._init();
+    ActionAtADistance.init();
 });

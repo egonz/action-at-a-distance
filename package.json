@@ -1,11 +1,10 @@
 {
   "name": "action-at-a-distance",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "keywords": [
     "casperjs",
     "casper",
     "phantomjs",
-    "spookyjs",
     "socket.io",
     "screen scraping"
   ],
@@ -19,8 +18,7 @@
     "express": "3.0.0", 
     "socket.io": "~0.9.13", 
     "underscore": "~1.4.4", 
-    "node-uuid": "1.4.0",
-    "spooky": "git://github.com/egonz/SpookyJS-Cookies.git"
+    "node-uuid": "1.4.0"
   },
   "devDependencies": {
     "mocha": "1.3.x",
@@ -33,6 +31,6 @@
     "url": "https://github.com/egonz/action-at-a-distance.git"
   },
   "license": "MIT",
-  "readme": "A socket based Javascript screen scraping NodeJS module; based on SpookyJS. Static and dynamic Ajax pages can be scraped on the client (in a Browser), or on the server using Node.js.\n\n### How does it work?\n\nCommunication occurs through Socket.io, which is automagically injected into every remote nonlocal page; loaded in a headless PhantomJS browser on the server.\n\nRemote nonlocal pages are sent Javascript (through Socket.io), and the local client receives results through the same socket; whether in the browser or on the server. Results can be sent asynchronously as they appear on the nonlocal page; see the Twitter demo.\n\n## Install\n\n### Prerequisites (same as [SpookyJS](https://github.com/WaterfallEngineering/SpookyJS))\n\n* Node.js\n* PhantomJS\n* CasperJS## Demos\n\nIncludes demos built with [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack) and AngularJS. To run the demos:\n\n1. Install Yeoman Express-Stack\n 2. git clone https://github.com/egonz/action-at-a-distance.git; cd $_\n 2. npm install\n 3. yeomen server\n\n",
+  "readme": "A socket based Javascript screen scraping NodeJS module. Static and dynamic Ajax pages can be scraped on the client (in a Browser), or on the server using Node.js.\n\n### How does it work?\n\nCommunication occurs through Socket.io, which is automagically injected into every remote nonlocal page; loaded in a headless PhantomJS browser on the server.\n\nRemote nonlocal pages are sent Javascript (through Socket.io), and the local client receives results through the same socket; whether in the browser or on the server. Results can be sent asynchronously as they appear on the nonlocal page; see the Twitter demo.\n\n## Install\n\n### Prerequisites\n\n* Node.js\n* PhantomJS\n* CasperJS## Demos\n\nIncludes demos built with [Yeoman Express-Stack](https://github.com/yeoman/yeoman/tree/express-stack) and AngularJS. To run the demos:\n\n1. Install Yeoman Express-Stack\n 2. git clone https://github.com/egonz/action-at-a-distance.git; cd $_\n 2. npm install\n 3. yeomen server\n\n",
   "readmeFilename": "README.md"
 }

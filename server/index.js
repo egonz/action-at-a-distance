@@ -3,11 +3,9 @@ var express = require('express');
 var app = express();
 
 var ActionAtADistance = require('./action-at-a-distance');
-var actionAtADistance = new ActionAtADistance();
+var actionAtADistance = new ActionAtADistance(app, undefined, undefined, undefined, undefined, undefined);
 
 actionAtADistance.start();
-
-actionAtADistance.addNodeClient();
 
 actionAtADistance.on('save', function(data) {
 	console.log('\nActionAtADistance Save Callback. Processing: ' + JSON.stringify(data) + '\n');
@@ -29,5 +27,7 @@ actionAtADistance.on('callback', function (data) {
         console.log('Evaluate result: ' + JSON.stringify(data.result));
     }
 });
+
+actionAtADistance.addNodeClient();
 
 module.exports = app;

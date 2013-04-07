@@ -1,23 +1,34 @@
 
-var express = require('express'),
-    server = require('http').createServer(express()),
-    nodeUuid = require('node-uuid'),
+var nodeUuid = require('node-uuid'),
     quantumEntanglement = require('./lib/quantum-entanglement.js'),
-    ghostProtocol = require('./lib/ghost-protocol.js')(__dirname);
+    GhostProtocol = require('./lib/ghost-protocol.js');
 
 (function() {
 
     ////////////////////// Private //////////////////////
 
     var _io;
+    var _that;
+    var _internalServer;
     var _defaultPort = 1313;
     var _nonLocalCorrelations = quantumEntanglement.NonLocalCorrelations;
-    var _that;
 
     function handleInit(socket) {
         console.log('New ActionAtADistance Socket.io connection.');
         socket.uuid = nodeUuid.v4();
-        _nonLocalCorrelations.addNonLocalCorrelation(socket, ghostProtocol.ghost(socket));
+        socket.ghost = new GhostProtocol(socket.uuid, _that.port, _that.clientScripts, _that.cookieFile, _that.customCasperScript);
+
+        _nonLocalCorrelations.addNonLocalCorrelation(socket, socket.ghost);
+
+        socket.ghost.on('loaded', function() {
+            socket.emit('loaded', {uuid: socket.uuid});
+        });
+
+        socket.ghost.on('ghost-protocol', function(data) {
+            console.log(data.toString());
+        });
+
+        socket.emit('initResp', {uuid: socket.uuid});
     }
 
     function handleDisconnect(uuid) {
@@ -31,7 +42,7 @@ var express = require('express'),
     function handleStart(socket, data) {
         console.log('start called for url ' + data.url + ' for uuid ' + socket.uuid);
         if (typeof data.url !== 'undefined') {
-            ghostProtocol.start(socket.ghost, data);
+            socket.ghost.start(data.url);
         }
     }
 
@@ -97,45 +108,69 @@ var express = require('express'),
 
     function bustGhost(uuid) {
         var nonLocalCorrelation = _nonLocalCorrelations.getNonLocalCorrelation(uuid);
-        nonLocalCorrelation.ghost.destroy();
+        nonLocalCorrelation.ghost.stop();
         delete nonLocalCorrelation.ghost;
     }
 
     ////////////////////// Public //////////////////////
 
     /**
-     * [ActionAtADistance description]
-     * @param {[type]} port          [description]
-     * @param {[type]} clientScripts [description]
-     * @param {[type]} cookieFile    [description]
+     * [ActionAtADistance A socket based Javascript screen scraping NodeJS module. Static 
+     *  and dynamic Ajax pages can be scraped on the client (in a Browser), or on the server 
+     *  using Node.js.]
+     * @param {[Express]} app                   [Express app instance.]
+     * @param {[Number]} port                   [ActionAtADistance Socket Port.]
+     * @param {[Array]} clientScripts           [Additional Javascript file paths to be injected into each nonlocal page.]
+     * @param {[String]} cookieFile             [Alternative cookiefile path.]
+     * @param {[String]} customCasperScript     [A custom Casper Script to be injected into each GhostProtocol instance.]
+     * @param {[Http]} server                   [Optional http server instance to bind to for Socket.IO connections.]
      */
-    ActionAtADistance = function(port, clientScripts, cookieFile) {
+    ActionAtADistance = function(app, port, clientScripts, cookieFile, customCasperScript, server) {
+        this.app = app;
+        this.server = server;
         this.port = port || _defaultPort;
         this.clientScripts = clientScripts; 
-        this.cookieFile = cookieFile;
+        this.cookieFile = cookieFile ;
+        this.customCasperScript = customCasperScript;
     }
 
     ActionAtADistance.prototype = Object.create(require('events').EventEmitter.prototype);
     ActionAtADistance.prototype.constructor = ActionAtADistance;
 
-    ActionAtADistance.prototype.start = function(waitTimout) {
+    ActionAtADistance.prototype.start = function() {
         _that = this;
-        ghostProtocol.init(this.clientScripts, this.cookieFile, waitTimout);
 
-        _io = require('socket.io').listen(server);
+        if (typeof this.server === 'undefined') {
+            var express = require('express');
+            this.server = require('http').createServer(express());
+            _internalServer = true;
+        } else {
+            _internalServer = false;
+        }
+
+        _io = require('socket.io').listen(this.server);
 
         _io.configure( function() {
             _io.set('close timeout', 60*60*24); // 24h time out
         });
 
-        server.listen(this.port, function(){
-            console.log("Express server listening on port %d", this.address().port);
+        if (_internalServer) {
+            this.server.listen(this.port, function(){
+                console.log("Express server listening on port %d", this.address().port);
+                setupSpookySocks();
+            });
+        } else {
             setupSpookySocks();
-        });
+        }
+
+        this.setupExpressRoute();
     };
 
     ActionAtADistance.prototype.stop = function() {
-        server.close();
+        //Only do this if the server is internal to AAAD
+        if (_internalServer === true) {
+            this.server.close();
+        }
     };
 
     ActionAtADistance.prototype.addNodeClient = function() {
@@ -148,6 +183,17 @@ var express = require('express'),
 
     ActionAtADistance.prototype.nodeClientEvaluate = function(data) {
         handleEvaluate(this, {action: data});
+    };
+
+    ActionAtADistance.prototype.setupExpressRoute = function() {
+        if (typeof this.app !== 'undefined') {
+            this.app.get('/aaad-socket-uri.js', function(req, res) {
+                var port = _that.port;
+                var socketURI = port ? ':' + port + '/' : '/';
+                res.set('Content-Type', 'text/javascript');
+                res.send('var aaadSocketURI="' + socketURI + '";');
+            });
+        }  
     };
 
 })();

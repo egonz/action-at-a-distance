@@ -14,11 +14,11 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
       });
 
     spookyActions.push('$(\'input[name="q"]\').val("CASPERJS");\n' +
-        '$(\'button[name="btnK"]\').submit();\n');
+        '$(\'form\').submit();\n');
     spookyActions.push('$("h3.r a").livequery(function() {\n' +
         '\tvar links=document.querySelectorAll("h3.r a");\n' +
         '\tlinks=Array.prototype.map.call(links,function(e){\n' +
-        '\t\treturn e.getAttribute("href")\n' +
+        '\t\treturn e["href"]\n' +
         '\t});\n' +
         '\tvar spookyResult = {data: links};\n' +
         '\tActionAtADistance.saveHtmlText(links);\n' +
@@ -31,11 +31,15 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
 
     var googleActionAtADistance = $rootScope.googleActionAtADistance;
 
-    googleActionAtADistance.onConnect(function() {
-        console.log('onConnect Google');
-        googleActionAtADistance.start(startUrl);
-        $scope.uuid = googleActionAtADistance.uuid();
+    googleActionAtADistance.init(function() {
+        onConnect();
     });
+
+    if (googleActionAtADistance.connected()) {
+        console.log('Page already loaded.');
+        $scope.spookyAction = spookyActions[1];
+        $scope.uuid = googleActionAtADistance.uuid();
+    }
 
     googleActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
         loadSpookyAction(documentLocationHref);
@@ -49,10 +53,12 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
         setTimeout(enableSpookyButton, 1000);
     });
 
-    if (googleActionAtADistance.connected()) {
-        console.log('Page already loaded.');
-        $scope.spookyAction = spookyActions[1];
-        $scope.uuid = googleActionAtADistance.uuid();
+    function onConnect() {
+        googleActionAtADistance.onConnect(function() {
+            console.log('onConnect Google');
+            googleActionAtADistance.start(startUrl);
+            $scope.uuid = googleActionAtADistance.uuid();
+        });
     }
 
     function loadSpookyAction(documentLocationHref) {

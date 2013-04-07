@@ -1,114 +1,78 @@
-var fs = require('fs'),
-	Spooky = require('spooky');
+var fs = require("fs");
+var spawn = require('child_process').spawn; 
 
+(function() {
 
-var ghostProtocol = function(baseDir) {
+	var _that;
+	var _casperjs;
+	var _aaadCasperJSScript = __dirname + '/../casperjs/scripts/aaad-casper.js';
+	var _scriptsDir = __dirname + '/../';
 
-	var _cookieFile;
-	var _clientScripts = [baseDir + '/vendor/jquery-1.9.1.min.js',
-	                      baseDir + '/vendor/socket.io.js',
-                          baseDir + '/vendor/jquery.livequery-1.1.1/jquery.livequery.js',
-                          baseDir + '/vendor/jquery-cookie/jquery.cookie.js',
-                          baseDir + '/vendor/jsonml-dom.js',
-                          baseDir + '/lib/action-at-a-distance-server.js'];
-    var _waitTimeout = 3600000;
+	function createCasperListeners(that) {
+		_casperjs.stdout.on('data', function (data) {
+			if (data === 'GHOST_PROTOCOL: LOADED') {
+				that.emit('loaded');
+			} else {
+				that.emit('ghost-protocol', data);
+			}
+		});
 
-    function readyForSpookyAction(socket) {
-		socket.emit('initResp', {uuid: socket.uuid});
+		_casperjs.stderr.on('data', function (data) {
+			that.emit('error', {error: msg});
+		});
+
+		_casperjs.on('close', function (code) {
+			that.emit('close', {code: code});
+		});
 	}
 
-	function cookieFileName(uuid) {
-	 	return _cookieFile + uuid + '.txt';
+	function getCasperJSParams(startUrl) {
+		var casperJsParams = [];
+		casperJsParams.push('--cookies-file=' + _that.cookieFile);
+		casperJsParams.push(_aaadCasperJSScript); 
+		casperJsParams.push('--startUrl=' + startUrl);
+		casperJsParams.push('--uuid='+ _that.uuid);
+		casperJsParams.push('--aaadPort='+ _that.port);
+		casperJsParams.push('--scriptsDir=' + _scriptsDir);
+		casperJsParams.push('--customCasper=' + _that.customCasperScript);
+
+		if (typeof _that.clientScripts != 'undefined') {
+			casperJsParams.push('--clientScripts=' + _that.clientScripts.join(","));
+		}
+
+		return casperJsParams;
 	}
 
-    return {
-    	init: function(clientScripts, cookieFile, waitTimeout) {
-    		if (typeof clientScripts !== 'undefined') {
-        		_clientScripts.concat(clientScripts);
-    		}
+	GhostProtocol = function(uuid, port, clientScripts, cookieFile, customCasperScript) {
+        this.uuid = uuid; 
+        this.port = port;
+        this.clientScripts = clientScripts; 
+        this.cookieFile = cookieFile || '/tmp/actionatadistanceCookie-';
+        this.customCasperScript = customCasperScript;
 
-    		if (typeof waitTimeout !== 'undefined') {
-    			_waitTimeout = waitTimeout;
-    		}
+        _that = this;
 
-    		_cookieFile = cookieFile || '/tmp/actionatadistanceCookie-';
-    	},
-	    ghost: function(socket) {
-	        var cookie = cookieFileName(socket.uuid);
-	        if (fs.existsSync(cookie))
-	            fs.unlinkSync(cookie);
-	        
-	        var spooky = new Spooky({
-	            casper: {
-	                verbose: true,
-	                logLevel: 'debug',
-	                waitTimeout: 3600000,
-	                clientScripts: _clientScripts,
-	                pageSettings: {
-	                     loadImages:  false,         // The WebPage instance used by Casper will
-	                     loadPlugins: false,         // use these settings
-	                     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4'
-	                },
-	                uuid: socket.uuid
-	            }
-	        }, function (err) {
-	            if (err) {
-	                e = new Error('Failed to initialize SpookyJS');
-	                e.details = err;
-	                throw e;
-	            }
+        console.log('New GhostPotocol for uuid ' + this.uuid);
+    }
 
-	            spooky.on('onStepComplete', function (e) {
-	                console.log('step ' + e);
-	            });
+    GhostProtocol.prototype = Object.create(require('events').EventEmitter.prototype);
+    GhostProtocol.prototype.constructor = GhostProtocol;
 
-	            spooky.on('error', function (e) {
-	                console.error(e);
-	            });
+    GhostProtocol.prototype.start = function(startUrl) {
+		_casperjs = spawn('casperjs', getCasperJSParams(startUrl));
 
-	            // Uncomment this block to see all of the things Casper has to say.
-	            // There are a lot.
-	            // He has opinions.
-	            spooky.on('console', function (line) {
-	                console.log(line);
-	            });
+		createCasperListeners(this);
 
-	            spooky.on('log', function (log) {
-	                if (log.space === 'remote') {
-	                    console.log(log.message.replace(/ \- .*/, ''));
-	                }
-	            });
+		return _casperjs;
+	};
 
-	            readyForSpookyAction(socket);
-	        }, cookie);
+	GhostProtocol.prototype.stop = function() {
+		//Ensure the process is still alive
+		if (_casperjs.killed === false) {
+			_casperjs.kill();
+		}
+	};
 
-	        return spooky;
-	    },
-		start: function(spooky, data) {
-	        spooky.start(data.url, function(res) {
-	            console.log("INITIAL PAGE LOADED");
+})();
 
-	            this.thenEvaluate(function (js) {
-	            	try {
-	            		eval(js);
-		                ActionAtADistance.setUuid(uuid);
-		               	ActionAtADistance.saveCookie();
-	                	ActionAtADistance.socket().emit('callback', {'action': 'start', 'uuid': uuid});
-	                } catch (err) {
-		            	console.log('Start Error ' + err);
-		            }
-	            }, 'uuid=\'' + this.options.uuid + '\';');
-	        });
-
-	        //This keeps the Sppoky.js code from timing out
-	        spooky.waitForSelector('div.spookyStop', function() {
-	            console.log('spookyStop selector found');
-	        });
-
-	        spooky.run();
-	    }
-	}
-
-}
-
-module.exports = ghostProtocol;
+module.exports = GhostProtocol;

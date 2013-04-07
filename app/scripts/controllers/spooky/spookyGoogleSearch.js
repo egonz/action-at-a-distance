@@ -8,7 +8,7 @@ actionatadistanceApp.controller('SpookyGoogleSearchCtrl', function($scope, $root
     var spookySearchResults = '$("h3.r a").livequery(function() {\n' +
         '\tvar links=document.querySelectorAll("h3.r a");\n' +
         '\tlinks=Array.prototype.map.call(links,function(e){\n' +
-        '\t\treturn e.getAttribute("href")\n' +
+        '\t\treturn e["href"]\n' +
         '\t});\n' +
         '\tvar spookyResult = {data: links};\n' +
         '\tActionAtADistance.saveHtmlText(links);\n' +
@@ -21,10 +21,13 @@ actionatadistanceApp.controller('SpookyGoogleSearchCtrl', function($scope, $root
 
     var googleSearchActionAtADistance = $rootScope.googleSearchActionAtADistance;
 
-    googleSearchActionAtADistance.onConnect(function() {
-        googleSearchActionAtADistance.start(startUrl);
-        $scope.uuid = googleSearchActionAtADistance.uuid();
+    googleSearchActionAtADistance.init(function() {
+        onConnect();
     });
+
+    if (googleSearchActionAtADistance.connected()) {
+
+    }
 
     googleSearchActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
         loadSpookyAction(documentLocationHref);
@@ -38,8 +41,11 @@ actionatadistanceApp.controller('SpookyGoogleSearchCtrl', function($scope, $root
         enableSpookyButton();
     });
 
-    if (googleSearchActionAtADistance.connected()) {
-
+    function onConnect() {
+        googleSearchActionAtADistance.onConnect(function() {
+            googleSearchActionAtADistance.start(startUrl);
+            $scope.uuid = googleSearchActionAtADistance.uuid();
+        });
     }
 
     function loadSpookyAction(documentLocationHref) {
@@ -60,7 +66,7 @@ actionatadistanceApp.controller('SpookyGoogleSearchCtrl', function($scope, $root
         $scope.disableSpookyButton = true;
 
         var q = '$(\'input[name="q"]\').val("' + $scope.spookyQuery + '");\n' +
-            '$(\'button[name="btnK"]\').submit();\n';
+            '$(\'form\').submit();\n';
 
         googleSearchActionAtADistance.evaluate({action: q});
     };

@@ -1,6 +1,6 @@
 # ActionAtADistance
 
-A socket based Javascript screen scraping NodeJS module; based on SpookyJS. Static and dynamic Ajax pages can be scraped on the client (in a Browser), or on the server using Node.js.
+A socket based Javascript screen scraping NodeJS module. Static and dynamic Ajax pages can be scraped on the client (in a Browser), or on the server using Node.js.
 
 ### How does it work?
 
@@ -13,7 +13,7 @@ Remote nonlocal pages are sent Javascript (through Socket.io), and the local cli
 
     npm install action-at-a-distance
 
-### Prerequisites (the same as SpookyJS)
+### Prerequisites
 
 * Node.js
 * PhantomJS
@@ -43,8 +43,6 @@ JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas
 
 ### Includes:
 
-    <script src="http://localhost:1313/socket.io/socket.io.js"></script>
-
     <script src="app/scripts/action-at-a-distance.js"></script>
 
 ### Example (from the [Google demo](https://github.com/egonz/action-at-a-distance/blob/master/app/scripts/controllers/spooky/spookyGoogle.js), san AngularJS code):
@@ -59,8 +57,9 @@ JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas
         'ActionAtADistance.sendCallback(spookyResult);' +
         '});');
 
-    googleActionAtADistance.onConnect(function() {
-        googleActionAtADistance.start('http://www.google.com');
+
+    googleActionAtADistance.init(function() {
+        onConnect();
     });
 
     googleActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
@@ -71,11 +70,17 @@ JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas
         spooky = data.result;
     });
 
+    function onConnect() {
+        googleActionAtADistance.onConnect(function() {
+            googleActionAtADistance.start(startUrl);
+        });
+    }
+
     function loadSpookyAction(documentLocationHref) {
         if (documentLocationHref === 'http://www.google.com') {
-            spookyAction = spookyActions[0];
+            googleActionAtADistance.evaluate({action: spookyActions[0]});
         } else if (documentLocationHref !== 'http://www.google.com') {
-            spookyAction = spookyActions[1];
+            googleActionAtADistance.evaluate({action: spookyActions[1]});
         }
     }
 
@@ -107,6 +112,31 @@ ActionAtADistance can also be used on the server, without a web client.
         }
     });
 
+### ActionAtADistnace Optional Parameters
+
+    /**
+     * [ActionAtADistance A socket based Javascript screen scraping NodeJS module. Static 
+     *  and dynamic Ajax pages can be scraped on the client (in a Browser), or on the server 
+     *  using Node.js.]
+     * @param {[Express]} app                   [Express app instance.]
+     * @param {[Number]} port                   [ActionAtADistance Socket Port.]
+     * @param {[Array]} clientScripts           [Additional Javascript file paths to be injected into each nonlocal page.]
+     * @param {[String]} cookieFile             [Alternative cookiefile path.]
+     * @param {[String]} customCasperScript     [A custom Casper Script to be injected into each GhostProtocol instance.]
+     * @param {[Http]} server                   [Optional http server instance to bind to for Socket.IO connections.]
+     */
+    ActionAtADistance(app, port, clientScripts, cookieFile, customCasperScript, server)
+
+Custom CasperJS scripts can be injected into the GhostProtocol script (my module that replaces SpookyJS). Scripts
+can have any plain Javascript code, can use console.log, execute Casper commands, and even load other Javascript
+files using require('/full/path/to/js/file').
+
+## Using an existing Express listener:
+
+Rather than listening on port 1313, you can initialize Action-At-A-Distance utilize
+an existing Express server.
+
+    var actionAtADistance = new ActionAtADistance(app, undefined, undefined, undefined, undefined, server);
 
 ## Demos
 
@@ -120,6 +150,17 @@ run the demos follow these steps:
 
 ----
 
+## Updates
+
+4-6-13
+
+Action-At-A-Distance no longer uses SpookyJS, but has been re-written to use CasperJS directly.
+This allows me to better control CasperJS based on the unique requirements of Action-At-A-Distance. 
+For instance I can keep the script from exiting until the Socket connection is closed. I can also 
+inject custom CasperJS code using the AAAD module now.
+
+----
+
 ## TODO
 
 ### Client API
@@ -128,9 +169,7 @@ Add html2canvas. Save canvas to PNG. Return URL.
 
 ### Server API
 
-* Expose the CasperJS timeout.
-
-* Change "start" action to "open". The first "open" action should result in start. Any additional "open" actions should exit the current Spooky thread and create a new one.
+* Change "start" action to "open". The first "open" action should result in start. Any additional "open" actions should exit the current GhostProtocol thread and create a new one.
 
 ### Client Demo
 

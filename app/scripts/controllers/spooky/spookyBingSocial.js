@@ -29,13 +29,16 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
         $rootScope.bingSocialActionAtADistance = ActionAtADistance();
     }
 
-    var bingSocialActionAtADistance = $rootScope.bingSocialActionAtADistance;
+    var bingSocialActionAtADistance = $rootScope.bingSocialActionAtADistance; 
 
-    bingSocialActionAtADistance.onConnect(function() {
-        console.log('onConnect Bing Social');
-        bingSocialActionAtADistance.start(startUrl);
-        $scope.uuid = bingSocialActionAtADistance.uuid();
+    bingSocialActionAtADistance.init(function() {
+        onConnect();
     });
+
+    if (bingSocialActionAtADistance.connected()) {
+        console.log('Page already loaded.');
+        $scope.uuid = bingSocialActionAtADistance.uuid();
+    }
 
     bingSocialActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
         loadSpookyAction(documentLocationHref);
@@ -49,9 +52,12 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
         setTimeout(enableSpookyButton, 1000);
     });
 
-    if (bingSocialActionAtADistance.connected()) {
-        console.log('Page already loaded.');
-        $scope.uuid = bingSocialActionAtADistance.uuid();
+    function onConnect() {
+        bingSocialActionAtADistance.onConnect(function() {
+            console.log('onConnect Bing Social');
+            bingSocialActionAtADistance.start(startUrl);
+            $scope.uuid = bingSocialActionAtADistance.uuid();
+        });
     }
 
     function loadSpookyAction(documentLocationHref) {
