@@ -18,6 +18,7 @@ Remote nonlocal pages are sent Javascript (through Socket.io), and the local cli
 * Node.js
 * PhantomJS
 * CasperJS
+* JQuery (if using the client API)
 
 ## NodeJS
 
