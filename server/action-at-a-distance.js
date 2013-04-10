@@ -1,5 +1,6 @@
 
-var nodeUuid = require('node-uuid'),
+var fs = require('fs'),
+    nodeUuid = require('node-uuid'),
     quantumEntanglement = require('./lib/quantum-entanglement.js'),
     GhostProtocol = require('./lib/ghost-protocol.js');
 
@@ -9,6 +10,7 @@ var nodeUuid = require('node-uuid'),
 
     var _io;
     var _that;
+    var _clientScript;
     var _internalServer;
     var _defaultPort = 1313;
     var _nonLocalCorrelations = quantumEntanglement.NonLocalCorrelations;
@@ -141,7 +143,7 @@ var nodeUuid = require('node-uuid'),
         _that = this;
 
         if (typeof this.server === 'undefined') {
-            var express = require('express');
+            var express = express = require('express');
             this.server = require('http').createServer(express());
             _internalServer = true;
         } else {
@@ -192,6 +194,21 @@ var nodeUuid = require('node-uuid'),
                 var socketURI = port ? ':' + port + '/' : '/';
                 res.set('Content-Type', 'text/javascript');
                 res.send('var aaadSocketURI="' + socketURI + '";');
+            });
+
+            this.app.get('/action-at-a-distance.js', function(req, res) {
+                res.set('Content-Type', 'text/javascript');
+
+                if (typeof _clientScript === 'undefined') {
+                    fs.readFile(__dirname + '/../app/scripts/action-at-a-distance.js', function (err, data) {
+                        if (err) throw err;
+
+                        _clientScript = data;
+                        res.send(data);
+                    });
+                } else {
+                    res.send(_clientScript);
+                }
             });
         }  
     };

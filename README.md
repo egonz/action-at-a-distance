@@ -43,7 +43,7 @@ JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas
 
 ### Includes:
 
-    <script src="app/scripts/action-at-a-distance.js"></script>
+    <script src="/action-at-a-distance.js"></script>
 
 ### Example (from the [Google demo](https://github.com/egonz/action-at-a-distance/blob/master/app/scripts/controllers/spooky/spookyGoogle.js), san AngularJS code):
 
