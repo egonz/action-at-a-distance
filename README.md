@@ -160,6 +160,20 @@ This allows me to better control CasperJS based on the unique requirements of Ac
 For instance I can keep the script from exiting until the Socket connection is closed. I can also 
 inject custom CasperJS code using the AAAD module now.
 
+4-18-13
+
+Added a new method:
+
+    startAndLogin: function(url, formName, userInputName, passInputName, user, pass)
+
+As an alternative to:
+
+    start: function(url)
+
+I have also added this Node method:
+
+    nodeClientStartAndLogin = function(url, formName, userInputName, passInputName, user, pass); 
+
 ----
 
 ## TODO

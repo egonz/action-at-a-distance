@@ -9,6 +9,11 @@ var aaadPort = casper.cli.get('aaadPort');
 var scriptsDir = casper.cli.get('scriptsDir');
 var extraClientScripts = casper.cli.get('clientScripts');
 var customCasper = casper.cli.get('customCasper');
+var loginFormName = casper.cli.get('loginFormName');
+var usernameInputName = casper.cli.get('usernameInputName');
+var passwordInputName = casper.cli.get('passwordInputName');
+var username = casper.cli.get('username');
+var password = casper.cli.get('password');
 
 var _clientScripts = [	scriptsDir + 'vendor/jquery-1.9.1.min.js',
 scriptsDir + 'vendor/socket.io.js',
@@ -17,17 +22,32 @@ scriptsDir + 'vendor/jquery-cookie/jquery.cookie.js',
 scriptsDir + 'vendor/jsonml-dom.js',
 scriptsDir + 'lib/action-at-a-distance-server.js'];
 
-if (typeof extraClientScripts !== 'undefined' && extraClientScripts !== 'undefined') {
-	_clientScripts = _clientScripts.concat(extraClientScripts.split(","));
+if (typeof extraClientScripts !== 'undefined' && typeof extraClientScripts !== 'undefined') {
+  _clientScripts = _clientScripts.concat(extraClientScripts.split(","));
 }
 
 casper.options.clientScripts = _clientScripts;
 
 console.log("CASPER STARTING... ClientScripts: " + _clientScripts);
 
-casper.start(startUrl, function() {
-  console.log("INITIAL PAGE LOADED");
-});
+if (typeof usernameInputName !== 'undefined' && typeof passwordInputName !== 'undefined' && 
+    typeof username !== 'undefined' && typeof password !== 'undefined') {
+
+  casper.start(startUrl, function() {
+    console.log("INITIAL PAGE LOADED");
+
+    this.fill("form[action='" + loginFormName + "']",
+        { usernameInputName: username,
+          passwordInputName: password }, true);
+    });
+
+} else {
+
+  casper.start(startUrl, function() {
+    console.log("INITIAL PAGE LOADED");
+  });
+
+}
 
 casper.thenEvaluate(function(uuid, aaadPort) {
 	try {

@@ -74,6 +74,11 @@ var ActionAtADistance = function() {
             lastRequestedUrl = url;
             socket.emit('start', {url: lastRequestedUrl});
         },
+        startAndLogin: function(url, formName, userInputName, passInputName, user, pass) {
+            lastRequestedUrl = url;
+            socket.emit('startAndLogin', {url: lastRequestedUrl, formName: formName, 
+                userInputName: userInputName, passInputName: passInputName, user: user, pass: pass});
+        },
         evaluate: function(data) {
             if (!'uuid' in data) {
                 data.uuid = _uuid;

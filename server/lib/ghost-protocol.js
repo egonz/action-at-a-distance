@@ -26,7 +26,7 @@ var spawn = require('child_process').spawn;
 		});
 	}
 
-	function getCasperJSParams(startUrl) {
+	function getCasperJSParams(startUrl, loginForm) {
 		var casperJsParams = [];
 		casperJsParams.push('--cookies-file=' + _that.cookieFile);
 		casperJsParams.push(_aaadCasperJSScript); 
@@ -40,7 +40,23 @@ var spawn = require('child_process').spawn;
 			casperJsParams.push('--clientScripts=' + _that.clientScripts.join(","));
 		}
 
+		if (typeof loginForm !== 'undefined') {
+			casperJsParams.push('--loginFormName=' + loginForm.name);
+			casperJsParams.push('--usernameInputName=' + loginForm.usernameInputName);
+			casperJsParams.push('--passwordInputName=' + loginForm.passwordInputName);
+			casperJsParams.push('--username=' + loginForm.username);
+			casperJsParams.push('--password=' + loginForm.password);
+		}
+
 		return casperJsParams;
+	}
+
+	var LoginForm = function (name, usernameInputName, passwordInputName, username, password) {
+		this.name = name;
+		this.usernameInputName = usernameInputName;
+		this.passwordInputName = passwordInputName;
+		this.username = username; 
+		this.password = password;
 	}
 
 	GhostProtocol = function(uuid, port, clientScripts, cookieFile, customCasperScript) {
@@ -60,6 +76,16 @@ var spawn = require('child_process').spawn;
 
     GhostProtocol.prototype.start = function(startUrl) {
 		_casperjs = spawn('casperjs', getCasperJSParams(startUrl));
+
+		createCasperListeners(this);
+
+		return _casperjs;
+	};
+
+	GhostProtocol.prototype.startAndLogin = function(startUrl, formName, 
+		                                             userInputName, passInputName, user, pass) {
+		_casperjs = spawn('casperjs', getCasperJSParams(startUrl, 
+			new LoginForm(formName, userInputName, passInputName, user, pass)));
 
 		createCasperListeners(this);
 

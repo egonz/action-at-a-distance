@@ -48,6 +48,14 @@ var fs = require('fs'),
         }
     }
 
+    function handleStartAndLogin(socket, data) {
+        console.log('startAndLogin called for url ' + data.url + ' for uuid ' + socket.uuid);
+        if (typeof data.url !== 'undefined') {
+            socket.ghost.startAndLogin(data.url, data.formName, data.userInputName, 
+                data.passInputName, data.user, data.pass);
+        }
+    }
+
     function handleEvaluate(socket, data) {
         try {
             console.log('evaluate called with spooky action ' + data.action + ' for uuid ' + socket.uuid);
@@ -92,6 +100,10 @@ var fs = require('fs'),
 
             socket.on('start', function (data) {
                 handleStart(socket, data);
+            });
+
+            socket.on('startAndLogin', function (data) {
+                handleStartAndLogin(socket, data);
             });
 
             socket.on('evaluate', function (data) {
@@ -181,6 +193,12 @@ var fs = require('fs'),
 
     ActionAtADistance.prototype.nodeClientStart = function(url) {
         handleStart(this, {url: url});
+    };
+
+    ActionAtADistance.prototype.nodeClientStartAndLogin = function(url, formName, userInputName, 
+                passInputName, user, pass) {
+        handleStartAndLogin(this, {url: url, formName: formName, userInputName: userInputName, 
+                passInputName: passInputName, user: user, pass: pass});
     };
 
     ActionAtADistance.prototype.nodeClientEvaluate = function(data) {
