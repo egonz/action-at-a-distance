@@ -1,6 +1,6 @@
 var ActionAtADistance = function() {
     var socket, lastRequestedUrl, currentlyLoadedUrl, 
-        _uuid, lastEvalResp, _connected = false, onDocumentLoadedCallback, onEvaluateResponseCallback;
+        _uuid, lastEvalResp, _connected = false, onDocumentLoadedCallback, onEvaluateResponseCallback, onDisconnect;
 
     function _log(msg) {
         if (typeof console !== 'undefined' && 
@@ -27,6 +27,10 @@ var ActionAtADistance = function() {
 
                 socket.on('connect', function () {
                     socket.emit('init');
+                });
+
+                socket.on('disconnect', function () {
+                    onDisconnect();
                 });
 
                 socket.on('callback', function (data) {
@@ -56,6 +60,9 @@ var ActionAtADistance = function() {
                 _connected = true;
                 callback();
             });
+        },
+        onDisconnect: function (callback) {
+            onDisconnect = callback;
         },
         onDocumentLoaded: function (callback) {
             onDocumentLoadedCallback = callback;

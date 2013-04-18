@@ -47,7 +47,7 @@ var spawn = require('child_process').spawn;
         this.uuid = uuid; 
         this.port = port;
         this.clientScripts = clientScripts; 
-        this.cookieFile = cookieFile || '/tmp/actionatadistanceCookie-';
+        this.cookieFile = cookieFile || '/tmp/actionatadistanceCookie-' + uuid;
         this.customCasperScript = customCasperScript;
 
         _that = this;
