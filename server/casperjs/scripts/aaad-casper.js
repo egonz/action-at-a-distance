@@ -36,10 +36,12 @@ if (typeof usernameInputName !== 'undefined' && typeof passwordInputName !== 'un
   casper.start(startUrl, function() {
     console.log("INITIAL PAGE LOADED");
 
-    this.fill("form[action='" + loginFormName + "']",
-        { usernameInputName: username,
-          passwordInputName: password }, true);
-    });
+    var formData = {};
+    formData[usernameInputName] = username;
+    formData[passwordInputName] = password;
+
+    this.fill("form[action='" + loginFormName + "']", formData, true);
+  });
 
 } else {
 
