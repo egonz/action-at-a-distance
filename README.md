@@ -172,7 +172,11 @@ As an alternative to:
 
 I have also added this Node method:
 
-    nodeClientStartAndLogin = function(url, formName, userInputName, passInputName, user, pass); 
+    nodeClientStartAndLogin = function(url, formName, userInputName, passInputName, user, pass);
+
+I've added a new method to the server nonlocal API:
+
+    ActionAtADistance.fireClick(element);
 
 ----
 
