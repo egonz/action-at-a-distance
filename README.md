@@ -178,6 +178,13 @@ I've added a new method to the server nonlocal API:
 
     ActionAtADistance.fireClick(element);
 
+4-19-13
+
+* Added [JQuery Sendkeys](http://bililite.com/blog/2011/01/23/improved-sendkeys/)
+* New nonlocal API method:
+    
+    simulateMouseClick(element);
+
 ----
 
 ## TODO

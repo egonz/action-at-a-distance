@@ -30,7 +30,9 @@ var ActionAtADistance = function() {
                 });
 
                 socket.on('disconnect', function () {
-                    onDisconnect();
+                    if (typeof onDisconnect !== 'undefined') {
+                        onDisconnect();
+                    }
                 });
 
                 socket.on('callback', function (data) {

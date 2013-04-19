@@ -20,6 +20,8 @@ scriptsDir + 'vendor/socket.io.js',
 scriptsDir + 'vendor/jquery.livequery-1.1.1/jquery.livequery.js',
 scriptsDir + 'vendor/jquery-cookie/jquery.cookie.js',
 scriptsDir + 'vendor/jsonml-dom.js',
+scriptsDir + 'vendor/bililiteRange.js',
+scriptsDir + 'vendor/jquery.sendkeys.js',
 scriptsDir + 'lib/action-at-a-distance-server.js'];
 
 if (typeof extraClientScripts !== 'undefined' && typeof extraClientScripts !== 'undefined') {
