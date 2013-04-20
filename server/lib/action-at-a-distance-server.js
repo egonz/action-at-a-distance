@@ -138,17 +138,20 @@ var ActionAtADistance = function() {
         },
 
         saveNodes: function(nodes) {
-            var html = nodes;
-            if ('length' in nodes && nodes.length > 0) {
-                html = nodes[0];
-            }
-            var jsonData = JsonML.fromHTML(html);
-            _socket.emit('save', jsonData);
+            _socket.emit('save', this.jsonFromNodes(nodes));
         },
 
         saveHtmlText: function(html) {
             var jsonData = JsonML.fromHTMLText(html);
             _socket.emit('save', jsonData);
+        },
+
+        jsonFromNodes: function(nodes) {
+            var html = nodes;
+            if ('length' in nodes && nodes.length > 0) {
+                html = nodes[0];
+            }
+            return JsonML.fromHTML(html);
         },
 
         saveCookie: function(data) {

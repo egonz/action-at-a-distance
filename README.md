@@ -183,7 +183,11 @@ I've added a new method to the server nonlocal API:
 * Added [JQuery Sendkeys](http://bililite.com/blog/2011/01/23/improved-sendkeys/)
 * New nonlocal API method:
     
-    simulateMouseClick(element);
+    ActionAtADistnace.simulateMouseClick(element);
+
+* Added nonlocal method:
+
+    ActionAtADistnace.jsonFromNodes(nodes);
 
 ----
 
