@@ -24,36 +24,31 @@ actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, $rootScope) {
 
     var wikiActionAtADistance = $rootScope.wikiActionAtADistance;
 
-    wikiActionAtADistance.init(function() {
-        onConnect();
-    });
-
-    if (wikiActionAtADistance.connected()) {
-        console.log('Page already loaded.');
-        $scope.spookyAction = spookyActions[0];
-        $scope.uuid = wikiActionAtADistance.uuid();
-    }
-
-    wikiActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
-        $scope.$apply(function () {
-            $scope.spookyAction = spookyActions[0];
-        });
-
-        editor.setValue($scope.spookyAction);
-    });
-
-    wikiActionAtADistance.onEvaluateResponse(function(data) {
-        $scope.$apply(function () {
-            $scope.spooky = data.result;
-        });
-    });
-
-    function onConnect() {
-        wikiActionAtADistance.onConnect(function() {
-            console.log('onConnect Wiki');
+    wikiActionAtADistance.connect(function() {
+        wikiActionAtADistance.on('initResp', function onInit() {
             wikiActionAtADistance.start(startUrl);
             $scope.uuid = wikiActionAtADistance.uuid();
         });
+
+        wikiActionAtADistance.on('callback', function (data) {
+            if (data.action === 'documentLoaded') {
+                $scope.$apply(function () {
+                    $scope.spookyAction = spookyActions[0];
+                });
+
+                editor.setValue($scope.spookyAction);
+            } else if (data.action === 'evaluate') {
+                $scope.$apply(function () {
+                    $scope.spooky = data.result;
+                });
+            }
+        });
+
+        wikiActionAtADistance.init();
+    });
+
+    if (wikiActionAtADistance.connected()) {
+        $scope.uuid = wikiActionAtADistance.uuid();
     }
 
     $scope.actionAtADistance = function() {

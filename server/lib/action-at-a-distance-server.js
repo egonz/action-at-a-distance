@@ -30,7 +30,7 @@ var ActionAtADistance = function() {
                     _sendCallback();
                 }
             } catch (err) {
-                console.log('Sppoky Action Error ' + err);
+                console.log('Spooky Action Error ' + err);
             }
         });
     }

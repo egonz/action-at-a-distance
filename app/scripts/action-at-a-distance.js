@@ -1,6 +1,6 @@
 var ActionAtADistance = function() {
-    var socket, lastRequestedUrl, currentlyLoadedUrl, 
-        _uuid, lastEvalResp, _connected = false, onDocumentLoadedCallback, onEvaluateResponseCallback, onDisconnect;
+    var _socket, _lastRequestedUrl, _currentlyLoadedUrl, 
+        _uuid, _lastEvalResp, _connected = false, _onCallback, _initCallback, _onDisconnect;
 
     function _log(msg) {
         if (typeof console !== 'undefined' && 
@@ -23,28 +23,28 @@ var ActionAtADistance = function() {
 
             $.getScript(socketIOUrl + "socket.io/socket.io.js", function(data, textStatus, jqxhr) {
 
-                socket = io.connect(socketIOUrl, {'force new connection': true});
+                _socket = io.connect(socketIOUrl, {'force new connection': true});
 
-                socket.on('connect', function () {
-                    socket.emit('init');
+                _socket.on('connect', function () {
+                    _socket.emit('init');
                 });
 
-                socket.on('disconnect', function () {
-                    if (typeof onDisconnect !== 'undefined') {
-                        onDisconnect();
+                _socket.on('disconnect', function () {
+                    if (typeof _onDisconnect !== 'undefined') {
+                        _onDisconnect();
                     }
                 });
 
-                socket.on('callback', function (data) {
+                _socket.on('callback', function (data) {
                     if (data.action === 'start') {
-                        currentlyLoadedUrl = lastRequestedUrl; //TODO pass the URL as part of the Socket.io response data
-                        onDocumentLoadedCallback(currentlyLoadedUrl);
+                        _currentlyLoadedUrl = _lastRequestedUrl; //TODO pass the URL as part of the Socket.io response data
                     }else if (data.action === 'documentLoaded') {
-                        onDocumentLoadedCallback(data.documentLocationHref);
+                        _currentlyLoadedUrl = data.documentLocationHref;
                     } else if (data.action === 'evaluate') {
-                        lastEvalResp = data;
-                        onEvaluateResponseCallback(lastEvalResp);
+                        _lastEvalResp = data;
                     }
+
+                    _onCallback(data);
                 });
 
                 callback();
@@ -53,48 +53,42 @@ var ActionAtADistance = function() {
     }
 
     return {
-        init: function(port, callback) {
+        connect: function(port, callback) {
             _loadSocketIO(port, callback);
         },
-        onConnect: function(callback) {
-            socket.on('initResp', function (data) {
+        init: function() {
+            _socket.on('initResp', function (data) {
                 _uuid = data.uuid;
                 _connected = true;
-                callback();
+                _initCallback();
             });
         },
         onDisconnect: function (callback) {
-            onDisconnect = callback;
-        },
-        onDocumentLoaded: function (callback) {
-            onDocumentLoadedCallback = callback;
-        },
-        onEvaluateResponse: function (callback) {
-            onEvaluateResponseCallback = callback;
+            _onDisconnect = callback;
         },
         start: function(url) {
-            lastRequestedUrl = url;
-            socket.emit('start', {url: lastRequestedUrl});
+            _lastRequestedUrl = url;
+            _socket.emit('start', {url: _lastRequestedUrl});
         },
         startAndLogin: function(url, formName, userInputName, passInputName, user, pass) {
-            lastRequestedUrl = url;
-            socket.emit('startAndLogin', {url: lastRequestedUrl, formName: formName, 
+            _lastRequestedUrl = url;
+            _socket.emit('startAndLogin', {url: _lastRequestedUrl, formName: formName, 
                 userInputName: userInputName, passInputName: passInputName, user: user, pass: pass});
         },
         evaluate: function(data) {
             if (!'uuid' in data) {
                 data.uuid = _uuid;
             }
-            socket.emit('evaluate', data);
+            _socket.emit('evaluate', data);
         },
         connected: function() {
             return _connected;
         },
         currentlyLoadedUrl: function() {
-            return currentlyLoadedUrl;
+            return _currentlyLoadedUrl;
         },
         lastEvalResponse: function() {
-            return lastEvalResp;
+            return _lastEvalResp;
         },
         uuid: function() {
             return _uuid;
@@ -104,8 +98,19 @@ var ActionAtADistance = function() {
         },
         logJson: function(msg) {
             _logJson(msg);
+        },
+        on: function(event, callback) {
+            if (event === 'callback') {
+                _onCallback = callback;
+            } else if (event === 'initResp') {
+                _initCallback = callback;
+            }
         }
     };
+}
+
+if (typeof exports == 'object' && exports) {
+    exports = module.exports = ActionAtADistance;
 }
 
 

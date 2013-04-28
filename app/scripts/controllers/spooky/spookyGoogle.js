@@ -31,42 +31,39 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
 
     var googleActionAtADistance = $rootScope.googleActionAtADistance;
 
-    googleActionAtADistance.init(function() {
-        onConnect();
-    });
-
-    if (googleActionAtADistance.connected()) {
-        console.log('Page already loaded.');
-        $scope.spookyAction = spookyActions[1];
-        $scope.uuid = googleActionAtADistance.uuid();
-    }
-
-    googleActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
-        loadSpookyAction(documentLocationHref);
-    });
-
-    googleActionAtADistance.onEvaluateResponse(function(data) {
-        $scope.$apply(function () {
-            $scope.spooky = data.result;
-        });
-
-        setTimeout(enableSpookyButton, 1000);
-    });
-
-    function onConnect() {
-        googleActionAtADistance.onConnect(function() {
-            console.log('onConnect Google');
+    googleActionAtADistance.connect(function() {
+        googleActionAtADistance.on('initResp', function() {
+            console.log('onInit Google');
             googleActionAtADistance.start(startUrl);
             $scope.uuid = googleActionAtADistance.uuid();
         });
+
+        googleActionAtADistance.on('callback', function (data) {
+            if (data.action === 'documentLoaded' || data.action === 'start') {
+                loadSpookyAction(data.documentLocationHref);
+            } else if (data.action === 'evaluate') {
+                $scope.$apply(function () {
+                    $scope.spooky = data.result;
+                });
+
+                setTimeout(enableSpookyButton, 1000);
+            }
+        });
+
+        googleActionAtADistance.init();
+    });
+
+    if (googleActionAtADistance.connected()) {
+        $scope.uuid = googleActionAtADistance.uuid();
     }
 
     function loadSpookyAction(documentLocationHref) {
-        if (documentLocationHref === 'http://www.google.com') {
+        console.log(documentLocationHref);
+        if (documentLocationHref === 'http://www.google.com' || documentLocationHref === 'http://www.google.com/') {
             $scope.$apply(function () {
                 $scope.spookyAction = spookyActions[0];
             });
-        } else if (documentLocationHref !== 'http://www.google.com') {
+        } else if (documentLocationHref !== 'http://www.google.com' && documentLocationHref !== 'http://www.google.com/') {
             $scope.$apply(function () {
                 $scope.spookyAction = spookyActions[1];
             });

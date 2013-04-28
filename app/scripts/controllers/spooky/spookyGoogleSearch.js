@@ -21,38 +21,35 @@ actionatadistanceApp.controller('SpookyGoogleSearchCtrl', function($scope, $root
 
     var googleSearchActionAtADistance = $rootScope.googleSearchActionAtADistance;
 
-    googleSearchActionAtADistance.init(function() {
-        onConnect();
-    });
-
-    if (googleSearchActionAtADistance.connected()) {
-
-    }
-
-    googleSearchActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
-        loadSpookyAction(documentLocationHref);
-    });
-
-    googleSearchActionAtADistance.onEvaluateResponse(function(data) {
-        $scope.$apply(function () {
-            $scope.spooky = data.result;
-        });
-
-        enableSpookyButton();
-    });
-
-    function onConnect() {
-        googleSearchActionAtADistance.onConnect(function() {
+    googleSearchActionAtADistance.connect(function() {
+        googleSearchActionAtADistance.on('initResp', function() {
             googleSearchActionAtADistance.start(startUrl);
             $scope.uuid = googleSearchActionAtADistance.uuid();
         });
+
+        googleSearchActionAtADistance.on('callback', function (data) {
+            if (data.action === 'documentLoaded' || data.action === 'start') {
+                loadSpookyAction(data.documentLocationHref);
+            } else if (data.action === 'evaluate') {
+                $scope.$apply(function () {
+                    $scope.spooky = data.result;
+                });
+
+                enableSpookyButton();
+            }
+        });
+
+        googleSearchActionAtADistance.init();
+    });
+
+    if (googleSearchActionAtADistance.connected()) {
+        $scope.uuid = googleSearchActionAtADistance.uuid();
     }
 
     function loadSpookyAction(documentLocationHref) {
         if (documentLocationHref !== 'http://www.google.com') {
             googleSearchActionAtADistance.evaluate({action: spookySearchResults});
         }
-
         setTimeout(enableSpookyButton, 1000);
     }
 

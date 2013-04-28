@@ -151,7 +151,7 @@ var fs = require('fs'),
     ActionAtADistance.prototype = Object.create(require('events').EventEmitter.prototype);
     ActionAtADistance.prototype.constructor = ActionAtADistance;
 
-    ActionAtADistance.prototype.start = function() {
+    ActionAtADistance.prototype.listen = function() {
         _that = this;
 
         if (typeof this.server === 'undefined') {
@@ -187,22 +187,26 @@ var fs = require('fs'),
         }
     };
 
-    ActionAtADistance.prototype.addNodeClient = function() {
-        handleInit(this);
+    ActionAtADistance.prototype.connect = function(callback) {
+        callback();
     };
 
-    ActionAtADistance.prototype.nodeClientStart = function(url) {
+    ActionAtADistance.prototype.start = function(url) {
         handleStart(this, {url: url});
     };
 
-    ActionAtADistance.prototype.nodeClientStartAndLogin = function(url, formName, userInputName, 
+    ActionAtADistance.prototype.startAndLogin = function(url, formName, userInputName, 
                 passInputName, user, pass) {
         handleStartAndLogin(this, {url: url, formName: formName, userInputName: userInputName, 
                 passInputName: passInputName, user: user, pass: pass});
     };
 
-    ActionAtADistance.prototype.nodeClientEvaluate = function(data) {
+    ActionAtADistance.prototype.evaluate = function(data) {
         handleEvaluate(this, {action: data});
+    };
+
+    ActionAtADistance.prototype.init = function() {
+        handleInit(this);
     };
 
     ActionAtADistance.prototype.setupExpressRoute = function() {

@@ -25,7 +25,7 @@ Remote nonlocal pages are sent Javascript (through Socket.io), and the local cli
 	var ActionAtADistance = require('action-at-a-distance');
     var actionAtADistance = new ActionAtADistance();
 
-    actionAtADistance.start();
+    actionAtADistance.listen();
 
     // A callback that can be initiated from the nonlocal page using the ActionAtADistance.saveHtmlText(html), 
     // or ActionAtADistance.saveNodes(nodes) methods;
@@ -58,24 +58,22 @@ JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas
         'ActionAtADistance.sendCallback(spookyResult);' +
         '});');
 
-
-    googleActionAtADistance.init(function() {
-        onConnect();
-    });
-
-    googleActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
-        loadSpookyAction(documentLocationHref);
-    });
-
-    googleActionAtADistance.onEvaluateResponse(function(data) {
-        spooky = data.result;
-    });
-
-    function onConnect() {
-        googleActionAtADistance.onConnect(function() {
+    googleActionAtADistance.connect(function() {
+        googleActionAtADistance.on('initResp', function() {
             googleActionAtADistance.start(startUrl);
+            uuid = googleActionAtADistance.uuid();
         });
-    }
+
+        googleActionAtADistance.on('callback', function (data) {
+            if (data.action === 'documentLoaded' || data.action === 'start') {
+                loadSpookyAction(data.documentLocationHref);
+            } else if (data.action === 'evaluate') {
+                spooky = data.result;
+            }
+        });
+
+        googleActionAtADistance.init();
+    });
 
     function loadSpookyAction(documentLocationHref) {
         if (documentLocationHref === 'http://www.google.com') {
@@ -88,30 +86,7 @@ JQuery, [LiveQuery](https://github.com/brandonaaron/livequery), and [html2canvas
 
 ## Node Client
 
-ActionAtADistance can also be used on the server, without a web client.
-
-### Example (from [server/index.html](https://github.com/egonz/action-at-a-distance/blob/master/server/index.js))
-
-    var ActionAtADistance = require('action-at-a-distance');
-    ...
-    actionAtADistance.addNodeClient();
-
-    actionAtADistance.on('initResp', function (data) {
-        console.log('Connected with NodeClient. Assigned UUID ' + data.uuid);
-        actionAtADistance.nodeClientStart('http://en.wikipedia.org/wiki/Spooky_the_Tuff_Little_Ghost');
-    });
-
-    actionAtADistance.on('callback', function (data) {
-        if (data.action === 'start') {
-            console.log('Start Callback. Sending Evaluate...');
-            actionAtADistance.nodeClientEvaluate('ActionAtADistance.setSpookyResult({'+
-                'data: $("div#mw-content-text").html()});console.log("Hello, from " + document.title);');
-        }else if (data.action === 'documentLoaded') {
-            console.log('Document loaded: ' + data.documentLocationHref);
-        } else if (data.action === 'evaluate') {
-            console.log('Evaluate result: ' + JSON.stringify(data.result));
-        }
-    });
+ActionAtADistance can also be used on the server, without a web client. The server API (as of version 1.0.19) is identical to the client API.
 
 ### ActionAtADistnace Optional Parameters
 
@@ -188,6 +163,11 @@ I've added a new method to the server nonlocal API:
 * Added nonlocal method:
 
     ActionAtADistnace.jsonFromNodes(nodes);
+
+4-28-13
+
+I've re-written the client and server APIs to be identical. This allows for sharing code between the client and server. For instance 
+create a client that allows results to be seen in the browser, and then later run the code on the server using Cron.
 
 ----
 

@@ -25,42 +25,39 @@ actionatadistanceApp.controller('SpookySandboxCtrl', function($scope, $rootScope
 
     var spookyWebsActionAtADistance = $rootScope.spookyWebsActionAtADistance;
 
-    spookyWebsActionAtADistance.init(function() {
-        onConnect();
-    });
-
-    if (spookyWebsActionAtADistance.connected()) {
-        $scope.uuid = spookyWebsActionAtADistance.uuid();
-    }
-
-    spookyWebsActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
-    	console.log('On Document Loaded ' + documentLocationHref);
-
-        $scope.$apply(function () {
-        	$scope.nonLocalDocumentLocation = documentLocationHref;
-        	$scope.disableSpookyButton = false;
-        });
-    });
-
-    spookyWebsActionAtADistance.onEvaluateResponse(function(data) {
-        $scope.$apply(function () {
-            $scope.spooky = data.result;
-
-            $('#spooky-html').text(style_html($scope.spooky.data, {
-      			'indent_size': 2,
-      			'indent_char': ' '
-    		}));
-        	prettyPrint();
-        });
-    });
-
-    function onConnect() {
-        spookyWebsActionAtADistance.onConnect(function() {
+    spookyWebsActionAtADistance.connect(function() {
+        spookyWebsActionAtADistance.on('initResp', function() {
             $scope.$apply(function () {
                 $scope.uuid = spookyWebsActionAtADistance.uuid();
                 $scope.disableStartButton = false;
             });
         });
+
+        spookyWebsActionAtADistance.on('callback', function (data) {
+            if (data.action === 'documentLoaded' || data.action === 'start') {
+                $scope.$apply(function () {
+                    $scope.nonLocalDocumentLocation = data.documentLocationHref;
+                    $scope.disableSpookyButton = false;
+                });
+            } else if (data.action === 'evaluate') {
+                $scope.$apply(function () {
+                    $scope.spooky = data.result;
+
+                    $('#spooky-html').text(style_html($scope.spooky.data, {
+                        'indent_size': 2,
+                        'indent_char': ' '
+                    }));
+                    
+                    prettyPrint();
+                });
+            }
+        });
+
+        spookyWebsActionAtADistance.init();
+    });
+
+    if (spookyWebsActionAtADistance.connected()) {
+        $scope.uuid = spookyWebsActionAtADistance.uuid();
     }
 
     $scope.start = function() {

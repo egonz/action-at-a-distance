@@ -31,33 +31,29 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
 
     var bingSocialActionAtADistance = $rootScope.bingSocialActionAtADistance; 
 
-    bingSocialActionAtADistance.init(function() {
-        onConnect();
-    });
-
-    if (bingSocialActionAtADistance.connected()) {
-        console.log('Page already loaded.');
-        $scope.uuid = bingSocialActionAtADistance.uuid();
-    }
-
-    bingSocialActionAtADistance.onDocumentLoaded(function(documentLocationHref) {
-        loadSpookyAction(documentLocationHref);
-    });
-
-    bingSocialActionAtADistance.onEvaluateResponse(function(data) {
-        $scope.$apply(function () {
-            $scope.spooky.unshift(data.result.data);
-        });
-
-        setTimeout(enableSpookyButton, 1000);
-    });
-
-    function onConnect() {
-        bingSocialActionAtADistance.onConnect(function() {
-            console.log('onConnect Bing Social');
+    bingSocialActionAtADistance.connect(function() {
+        bingSocialActionAtADistance.on('initResp', function() {
             bingSocialActionAtADistance.start(startUrl);
             $scope.uuid = bingSocialActionAtADistance.uuid();
         });
+
+        bingSocialActionAtADistance.on('callback', function (data) {
+            if (data.action === 'documentLoaded') {
+                loadSpookyAction(data.documentLocationHref);
+            } else if (data.action === 'evaluate') {
+                $scope.$apply(function () {
+                    $scope.spooky.unshift(data.result.data);
+                });
+
+                setTimeout(enableSpookyButton, 1000);
+            }
+        });
+
+        bingSocialActionAtADistance.init();
+    });
+
+    if (bingSocialActionAtADistance.connected()) {
+        $scope.uuid = bingSocialActionAtADistance.uuid();
     }
 
     function loadSpookyAction(documentLocationHref) {
