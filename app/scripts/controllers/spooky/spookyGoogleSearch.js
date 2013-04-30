@@ -48,7 +48,7 @@ actionatadistanceApp.controller('SpookyGoogleSearchCtrl', function($scope, $root
 
     function loadSpookyAction(documentLocationHref) {
         if (documentLocationHref !== 'http://www.google.com') {
-            googleSearchActionAtADistance.evaluate({action: spookySearchResults});
+            googleSearchActionAtADistance.evaluate(spookySearchResults);
         }
         setTimeout(enableSpookyButton, 1000);
     }
@@ -65,7 +65,7 @@ actionatadistanceApp.controller('SpookyGoogleSearchCtrl', function($scope, $root
         var q = '$(\'input[name="q"]\').val("' + $scope.spookyQuery + '");\n' +
             '$(\'form\').submit();\n';
 
-        googleSearchActionAtADistance.evaluate({action: q});
+        googleSearchActionAtADistance.evaluate(q);
     };
 
 });

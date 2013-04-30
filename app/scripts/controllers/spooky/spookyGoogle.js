@@ -2,7 +2,7 @@
 
 actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope) {
 
-    var startUrl = 'http://www.google.com';
+    var startUrl = 'http://www.google.com/';
     var spookyActions = [];
     $scope.disableSpookyButton = false;
 
@@ -33,7 +33,6 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
 
     googleActionAtADistance.connect(function() {
         googleActionAtADistance.on('initResp', function() {
-            console.log('onInit Google');
             googleActionAtADistance.start(startUrl);
             $scope.uuid = googleActionAtADistance.uuid();
         });
@@ -58,12 +57,11 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
     }
 
     function loadSpookyAction(documentLocationHref) {
-        console.log(documentLocationHref);
-        if (documentLocationHref === 'http://www.google.com' || documentLocationHref === 'http://www.google.com/') {
+        if (documentLocationHref === 'http://www.google.com/') {
             $scope.$apply(function () {
                 $scope.spookyAction = spookyActions[0];
             });
-        } else if (documentLocationHref !== 'http://www.google.com' && documentLocationHref !== 'http://www.google.com/') {
+        } else if (documentLocationHref.indexOf('http://www.google.com/#') === 0) {
             $scope.$apply(function () {
                 $scope.spookyAction = spookyActions[1];
             });
@@ -82,7 +80,7 @@ actionatadistanceApp.controller('SpookyGoogleCtrl', function($scope, $rootScope)
 
     $scope.actionAtADistance = function() {
         $scope.disableSpookyButton = true;
-        googleActionAtADistance.evaluate({action: $scope.spookyAction});
+        googleActionAtADistance.evaluate($scope.spookyAction);
     };
 
     prettyPrint();

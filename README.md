@@ -169,6 +169,10 @@ I've added a new method to the server nonlocal API:
 I've re-written the client and server APIs to be identical. This allows for sharing code between the client and server. For instance 
 create a client that allows results to be seen in the browser, and then later run the code on the server using Cron.
 
+4-29-13
+
+Bugfixes. The client API was not creating the JSON object wrapper for evaluate calls. I also added documentLocationHref to the "start" callback.
+
 ----
 
 ## TODO
@@ -182,6 +186,12 @@ Add html2canvas. Save canvas to PNG. Return URL.
 * Change "start" action to "open". The first "open" action should result in start. Any additional "open" actions should exit the current GhostProtocol thread and create a new one.
 
 ### Client Demo
+
+----
+
+## Inpiration
+
+The inspiration of this project came from the idea: hey what if I injected Socket.io into a CasperJS script and used this socket to control a web page. I initially used SpookyJS to run CasperJS in Node. Thus the name Action At A Distance is a reference to "spooky action at a distance" from quantum physics. Later I stopped using SpookyJS and wrote a CasperJS script that is spawned directly.
 
 ## License
 

@@ -66,12 +66,12 @@ actionatadistanceApp.controller('SpookySandboxCtrl', function($scope, $rootScope
             spookyWebsActionAtADistance.start($scope.startUrl);
         } else {
             //This is not working yet
-            spookyWebsActionAtADistance.evaluate({action: 'document.location.href="' + $scope.startUrl + '"'});    
+            spookyWebsActionAtADistance.evaluate('document.location.href="' + $scope.startUrl + '"');    
         }
     };
 
     $scope.actionAtADistance = function() {
-        spookyWebsActionAtADistance.evaluate({action: editor.getValue()});
+        spookyWebsActionAtADistance.evaluate(editor.getValue());
     };
 
     prettyPrint();

@@ -52,7 +52,7 @@ actionatadistanceApp.controller('SpookyWikiCtrl', function($scope, $rootScope) {
     }
 
     $scope.actionAtADistance = function() {
-        wikiActionAtADistance.evaluate({action: $scope.spookyAction});
+        wikiActionAtADistance.evaluate($scope.spookyAction);
     };
 
     prettyPrint();

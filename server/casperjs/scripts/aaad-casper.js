@@ -65,7 +65,7 @@ casper.thenEvaluate(function(uuid, aaadPort) {
 		ActionAtADistance.setUuid(uuid);
     ActionAtADistance.saveCookie();
     ActionAtADistance.init();
-    ActionAtADistance.socket().emit('callback', {'action': 'start', 'uuid': uuid});
+    ActionAtADistance.socket().emit('callback', {'action': 'start', 'uuid': uuid, documentLocationHref: document.location.href});
   } catch (err) {
     console.log('Start Error ' + err);
   }

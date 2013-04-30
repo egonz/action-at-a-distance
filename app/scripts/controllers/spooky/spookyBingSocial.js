@@ -80,7 +80,7 @@ actionatadistanceApp.controller('SpookyBingSocialCtrl', function($scope, $rootSc
 
     $scope.actionAtADistance = function() {
         $scope.disableSpookyButton = true;
-        bingSocialActionAtADistance.evaluate({action: $scope.spookyAction});
+        bingSocialActionAtADistance.evaluate($scope.spookyAction);
     };
 
     prettyPrint();

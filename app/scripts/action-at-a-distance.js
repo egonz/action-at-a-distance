@@ -76,10 +76,7 @@ var ActionAtADistance = function() {
                 userInputName: userInputName, passInputName: passInputName, user: user, pass: pass});
         },
         evaluate: function(data) {
-            if (!'uuid' in data) {
-                data.uuid = _uuid;
-            }
-            _socket.emit('evaluate', data);
+            _socket.emit('evaluate', {action: data});
         },
         connected: function() {
             return _connected;
