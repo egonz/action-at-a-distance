@@ -189,7 +189,7 @@ Add html2canvas. Save canvas to PNG. Return URL.
 
 ----
 
-## Inpiration
+## Inspiration
 
 The inspiration of this project came from the idea: hey what if I injected Socket.io into a CasperJS script and used this socket to control a web page. I initially used SpookyJS to run CasperJS in Node. Thus the name Action At A Distance is a reference to "spooky action at a distance" from quantum physics. Later I stopped using SpookyJS and wrote a CasperJS script that is spawned directly.
 
